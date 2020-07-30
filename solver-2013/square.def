@@ -1,0 +1,177 @@
+#ifndef SQUARE_DEF
+#define SQUARE_DEF
+
+#include "square.h"
+
+/*************************************************************************************************/
+/*************************************************/
+/* class Square
+/*/
+
+template <class number>
+Square<number>::Square (int N) : dim(N) , M(new number*[N])
+{
+	M[0] = new number[N*N];
+	for (int i = 1; i < N; i++) M[i] = M[i-1] + N;
+}
+
+template <class number>
+Square<number>::Square (const Square& rhs) : dim(rhs.dim) , M(new number*[dim])
+{
+	int i,j;
+	M[0] = new number[dim*dim];
+	for (i = 1; i < dim; i++) M[i] = M[i-1] + dim;
+	for (i = 0; i < dim; i++) 
+		for (j = 0; j < dim; j++) M[i][j] = rhs[i][j];
+}
+
+template <class number>
+Square<number>::Square (const number& a, int N) : dim(N) , M(new number*[dim])
+{
+	int i, j;
+	M[0] = new number[dim*dim];
+	for (i = 1; i < dim; i++) M[i] = M[i-1] + dim;
+	for (i = 0; i < dim; i++) {
+		for (j = 0; j < dim; j++) M[i][j] = number(0);  // cast 
+		M[i][i] = a;
+	}
+}
+
+template <class number>
+Square<number>::Square (const Square& a, const Square& b) : dim (a.dim * b.dim) , M(new number*[a.dim * b.dim]) 
+{
+	M[0] = new number[a.dim * b.dim * a.dim * b.dim];
+	for (int i = 1; i < a.dim * b.dim; ++i) M[i] = M[i-1] + a.dim * b.dim;
+
+	for (int i1 = 0; i1 < a.dim; ++i1) 
+	for (int i2 = 0; i2 < a.dim; ++i2) 
+	for (int j1 = 0; j1 < b.dim; ++j1) 
+	for (int j2 = 0; j2 < b.dim; ++j2) 
+		M[i1 * (b.dim) + j1][i2 * (b.dim) + j2] = a[i1][i2] * b[j1][j2];
+}
+	
+
+template <class number>
+Square<number>::Square (const Square& a, int row_id, int col_id) : dim (a.dim - 1) , M(new number*[dim])
+{
+	if (dim == 0) throw Exception("Square::Square", exc_BaldChicken);
+
+	M[0] = new number[dim * dim];
+
+	for (int i = 1; i < dim; ++i) M[i] = M[i-1] + dim;
+	for (int i = 0; i < row_id; ++i) for (int j = 0; j < col_id; ++j) M[i][j] = a[i][j];
+	for (int i = row_id; i < dim; ++i) for (int j = 0; j < col_id; ++j) M[i][j] = a[i+1][j];
+	for (int i = 0; i < row_id; ++i) for (int j = col_id; j < dim; ++j) M[i][j] = a[i][j+1];
+	for (int i = row_id; i < dim; ++i) for (int j = col_id; j < dim; ++j) M[i][j] = a[i+1][j+1];
+}
+
+
+
+template <class number>
+Square<number>& Square<number>::operator= (const Square<number>& rhs)
+{
+	if (this != &rhs) {
+		if (dim != rhs.dim) throw Exception ("Square::operator=", exc_IncompatibleSizes);
+
+		for (int i = 0; i < dim; ++i) 
+			for (int j = 0; j < dim; ++j) 
+				M[i][j] = rhs[i][j];
+	}
+	return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator= (const number& a)
+{
+	for (int i = 0; i < dim; ++i) {
+		for (int j = 0; j < dim; ++j) 
+			M[i][j] = number(0);
+		M[i][i] = a;
+	}
+return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator+= (const number& a)
+{
+	for (int i = 0; i < dim; ++i) 
+		M[i][i] += a;
+	return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator+= (const Square<number>& a)
+{
+	if (dim != a.dim) throw Exception ("Square::operator+", exc_IncompatibleSizes);
+	for (int i = 0; i < dim; ++i) 
+		for (int j = 0; j < dim; ++j) 
+			M[i][j] += a[i][j];
+	return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator-= (const number& a)
+{
+	for (int i = 0; i < dim; ++i) 
+		M[i][i] -= a;
+	return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator-= (const Square<number>& a)
+{
+	if (dim != a.dim) throw Exception ("Square::operator-", exc_IncompatibleSizes);
+
+	for (int i = 0; i < dim; ++i) 
+		for (int j = 0; j < dim; ++j) 
+			M[i][j] -= a[i][j];
+	return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator*= (const number& a)
+{
+	for (int i = 0; i < dim; ++i) for (int j = 0; j < dim; ++j) M[i][j] *= a;
+	return *this;
+}
+
+template <class number>
+Square<number>& Square<number>::operator*= (const Square<number>& a)
+{
+	if (dim != a.dim) throw Exception ("Square::operator*", exc_IncompatibleSizes);
+
+	Square<number> leftarg(*this);  // use copy constructor.
+	for (int i = 0; i < dim; ++i) 
+		for (int j = 0; j < dim; ++j) {
+			M[i][j] = 0.0;
+			for (int k = 0; k < dim; ++k) 
+				M[i][j] += leftarg[i][k] * a[k][j];
+		}
+	return *this;
+}
+  
+
+template <class number>
+Square<number>::~Square()
+{
+	if (M != 0) {
+		delete[] M[0];
+		delete[] M;
+	}
+}
+
+// outputting a square
+template<class number>
+ostream& operator<< (ostream& stream, Square<number> out_to_be_put) {
+	
+	if (!out_to_be_put.size()) return stream;
+	
+	for (int i=0; i< out_to_be_put.size(); ++i)	{
+		for (int j=0; j< out_to_be_put.size(); ++j)	
+			stream << SEP << out_to_be_put[i][j];
+		stream <<endl;
+	}
+	
+	return stream;
+}
+#endif
