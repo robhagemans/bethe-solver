@@ -13,8 +13,8 @@ inline const int length(const int type) { return type+1; }
 
 
 // noninteracting rapidities
-inline const double lambda0(const int big_n, const int ix2, const int j) 
-{    
+inline const double lambda0(const int big_n, const int ix2, const int j)
+{
     return 0.5*length(j)*tan( 0.5*ix2*PI/double(big_n) );
 }
 
