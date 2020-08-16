@@ -14,8 +14,8 @@ using namespace std;
 REAL NEWscanBase (
 	AddFunc& addFunc,
 	Quantity& quantity,
-	Base* p_base, 
-	Policy policy, 
+	Base* p_base,
+	Policy policy,
 	const AcceptFunc& accept = acceptHalfBrillouin,
 	const REAL deviation_threshold = DEFAULT_DEVIATION_THRESHOLD,
 	const long long int id_start=NO_ID, const long long int id_stop=NO_ID
@@ -26,22 +26,22 @@ REAL NEWscanBase (
 
 /** 'scan' a single state **/
 bool NEWscanState(
-	AddFunc& addfunc, 
-	Quantity& quantity, 
-	State* p_state, 
-	const AcceptFunc& accept, 
+	AddFunc& addfunc,
+	Quantity& quantity,
+	State* p_state,
+	const AcceptFunc& accept,
 	const REAL deviation_threshold,
 	const Policy policy,
 	ScanResult& scan_result)
 {
 	// weights for half Brillouin zone
 	// add to statistics only if the contribution is in the correct half-Brillouin sector
-	// NOTE: this should give correct results for half-Brillouin as well as full-Brillouin, 
+	// NOTE: this should give correct results for half-Brillouin as well as full-Brillouin,
 	// but may botch up for single momentum
 	int weight = 0;
  	if (p_state->mode()==0 || p_state->mode()==p_state->chain.length()/2) weight = 1;
  	else if (p_state->mode()> 0  && p_state->mode() < p_state->chain.length()/2) weight = 2;
-	
+
 	scan_result.number_total += weight;
 	if (!accept(*p_state)) {
 		scan_result.number_not_accepted += weight;
@@ -57,30 +57,30 @@ bool NEWscanState(
 
 	State* p_right_state = 0;
 	REAL deviation;
-					
-								
+
+
 	try {
 		// solve the Bethe Equations up to convergence
-		if (p_state->solve(policy)) { 
+		if (p_state->solve(policy)) {
 			// our state has converged
 			deviation = p_state->stringDeviation();
 			// our core business: calculate form factor
-			if (deviation < deviation_threshold) quantity.setRightState(*p_state); 
+			if (deviation < deviation_threshold) quantity.setRightState(*p_state);
 			else if (
-				p_state->chain.delta()==1.0 
+				p_state->chain.delta()==1.0
 				&& (
-					(quantity.name() == Longitudinal::ff_name && p_state->base.numberInfiniteRapidities() == 0) 
-					|| (quantity.name() == SPlusMinus::ff_name && p_state->base.numberInfiniteRapidities() < 2) 
+					(quantity.name() == Longitudinal::ff_name && p_state->base.numberInfiniteRapidities() == 0)
+					|| (quantity.name() == SPlusMinus::ff_name && p_state->base.numberInfiniteRapidities() < 2)
 				)
 			) {
  				p_right_state = new XXXDeviatedState ( *p_state );
 				if (!p_right_state->solve(policy)) {
 					// we haven't converged! (counts as deviated)
 					scan_result.number_deviated += weight;
-					
+
 					// log as exception (for debugging purposes)
-					addfunc.logstream 
-						<<name(p_right_state->base)<<"_id"<< p_right_state->id() 
+					addfunc.logstream
+						<<name(p_right_state->base)<<"_id"<< p_right_state->id()
 						<<": deviance not converged after "<< p_right_state->iterations
 						<<" iterations; q.n. "<<p_right_state->quantum_number<<endl;
 
@@ -91,7 +91,7 @@ bool NEWscanState(
 				}
 				else quantity.setRightState(*p_right_state);
 			}
-			
+
 			else {
 				scan_result.number_deviated += weight;
 				return false;
@@ -107,20 +107,20 @@ bool NEWscanState(
 
 		scan_result.number_calculated += weight;
 // 		if (finite(quantity.formFactor()))	scan_result.sum += quantity.formFactor() * REAL(weight);
-	} 
+	}
 	catch (Exception exc) {
 		if (exc.error == exc_Equal) scan_result.number_equal += weight;
 		else scan_result.number_exceptions += weight;
 		addfunc.logstream << name(p_state->base) <<"_state"<< p_state->id() <<": "<< exc <<endl;
 	};
-	
+
 	// if we've created something new, delete it now.
 	if (p_right_state && p_right_state != p_state) delete p_right_state;
 	return true;
 }
 
 
-		
+
 
 
 
@@ -129,39 +129,39 @@ bool NEWscanState(
 
 /** scan through a base **/
 REAL NEWscanBase (
-	AddFunc& addfunc, 
-	Quantity& quantity, 
-	Base* p_base, 
-	Policy policy,  
-	const AcceptFunc& accept, 
+	AddFunc& addfunc,
+	Quantity& quantity,
+	Base* p_base,
+	Policy policy,
+	const AcceptFunc& accept,
 	const REAL deviation_threshold,
-	long long int start_id, 
+	long long int start_id,
 	long long int stop_id)
 {
 	const char* here = "scanBase";
 	long long int lim_id = p_base->limId().back();
 	if (start_id==NO_ID) start_id = 0;
 	if (stop_id==NO_ID) stop_id = lim_id;
-	
+
 	// set timer
 	Stopwatch stopwatch;
 	// set sum to zero
-	ScanResult scan_result; 
+	ScanResult scan_result;
 	// NO_ID: do not set id (and thus don't throw exceptions)
-	State* p_state = newState (*p_base, NO_ID);	
+	State* p_state = newState (*p_base, NO_ID);
 	// loop over given interval of base
 	for (long long int id = start_id; id < stop_id; ++id) {
 		// set the id. may throw exceptions, which we don't catch as we can't resume anyway.
-		int	state_change = p_state->setId(id); 
-		if (state_change>1 || !scan_result.number_total) p_state->setFreeRapidities();	
+		int	state_change = p_state->setId(id);
+		if (state_change>1 || !scan_result.number_total) p_state->setFreeRapidities();
 		NEWscanState(addfunc, quantity, p_state, accept, deviation_threshold, policy, scan_result);
 	}
-	
-	// sum rule	
+
+	// sum rule
 	REAL max_sum = quantity.maxSum ();
-	
+
 	delete p_state;
-// cerr<<"sums:     "<<scan_result.sum<<SEP<<max_sum<<SEP<<scan_result.sum/max_sum<<endl;	
+// cerr<<"sums:     "<<scan_result.sum<<SEP<<max_sum<<SEP<<scan_result.sum/max_sum<<endl;
 	return scan_result.sum/max_sum;
 }
 
@@ -196,7 +196,7 @@ nullstream cnull;
 
 #define CHOPHOLD 1e-10
 inline complex<REAL> chop (complex<REAL> choppand)
-{ 
+{
 	if (abs(real(choppand))< CHOPHOLD) real(choppand) = 0.0;
 	if (abs(imag(choppand))< CHOPHOLD) imag(choppand) = 0.0;
 }
@@ -207,10 +207,10 @@ public:
 	int count;
 	REAL sum;
 	inline DumpRoots(void) : AddFunc(cerr), count(0), sum(0.0) { } ;
-	inline void operator() (Quantity& quantity)	{ 
+	inline void operator() (Quantity& quantity)	{
 		State& state = quantity.rightState();
 		cout<<count+1<<". &"<<SEP;
-		
+
 		// ouch.
 		XXX_State& iso_state = *( (XXX_State*) &state);
 
@@ -222,10 +222,10 @@ public:
   			cout<<"$"<<int(2.0*two_j)<<"$ &"<<SEP;
 		}
 
- 		
+
 //   		cout<<sqrt(error)<<SEP;
 // 		cout<<iso_state.betheError()<<SEP;
-				
+
 		for (int j=0; j< state.base.numberTypes();++j)
 		for (int alpha=0; alpha< state.base.numberStringsOfType(j);++alpha) {
 			int length_j = state.chain.stringLength(j);
@@ -236,13 +236,13 @@ public:
 					cout<<"\\multicolumn{"<<length_j<<"}{c}{$";
 				cout<<state.quantum_number(j, alpha)<<"_"<<length_j<<"$} &"<<SEP;
 			}
-			else 
+			else
 				cout<<"$"<<state.quantum_number(j, alpha)<<"_"<<length_j<<"$ &"<<SEP;
 		}
-		
-		
+
+
 		for (int j=0; j< state.base.numberTypes();++j)
-		for (int alpha=0; alpha< state.base.numberStringsOfType(j);++alpha) 
+		for (int alpha=0; alpha< state.base.numberStringsOfType(j);++alpha)
 		for (int a=0; a<(state.chain.stringLength(j)+1)/2; ++a)	{
 			complex<REAL> ze_root = state.root(j, alpha, a);
 			if (abs(imag(ze_root))<CHOPHOLD) {
@@ -257,25 +257,25 @@ public:
 				if (abs(real(ze_root))<CHOPHOLD) cout<<"\\pm "<<abs(imag(ze_root))<<"i"<<"$} &"<<SEP;
 				else cout<<real(ze_root)<<"\\pm "<<abs(imag(ze_root))<<"i"<<"$} &"<<SEP;
 			}
-			
+
 		}
-		
+
  		cout<<"$"<<state.energy()<<"$ \\\\"<<endl;
-		
-/*		
+
+/*
 		XXXDeviatedState& dev_state = *( (XXXDeviatedState*) &state);
 		try {
 			if (dev_state.oddSymmetric()) {
 				cerr<<name(state.base)<<"_id"<<state.id()<<SEP<<iso_state.betheError()<<SEP;
 				cerr<<state.admissible()<<SEP<<dev_state.oddSymmetric()<<SEP<<state.symmetric()<<SEP;
-				cerr<<quantity.formFactor()<<endl; 	
+				cerr<<quantity.formFactor()<<endl;
 				cerr<<state.roots()<<endl<<state.quantum_number<<endl;;
 				cerr<<dev_state.betheError()<<endl;
-				
+
 			}
  			if (finite(quantity.formFactor())) sum += quantity.formFactor();
 		}
-		catch (Exception exc) {	
+		catch (Exception exc) {
  			cerr<<"(error)"<<endl;
 		}
 */
@@ -288,7 +288,7 @@ public:
 
 
 int run(void)
-{	
+{
 	double delta;
 	int number_sites;
 	int number_down_left, number_spinons;
@@ -296,21 +296,21 @@ int run(void)
 	int function_index, element;
 	int number_energy;
 	REAL max_energy;
-	
+
 	//Policy policy = {1000, 1, 1e-28, 1e-2, 1e-2, 10.0, 1, 20}; // fewer newtons for large N; DEFAULT_POLICY is better for small systems
 	Policy policy = {2000, 100, 1e-30, 1e-2, 1e-2, 10.0, 7, 20};
 
 	cerr<<"delta  N  M"<<endl;
 	cin >> delta >> number_sites >> number_down_left;
-	
-	Chain* p_chain = newChain (delta, number_sites, /* cutoff_types = */ 8);	
+
+	Chain* p_chain = newChain (delta, number_sites, /* cutoff_types = */ 8);
 	Base* p_ground_base = newGroundBase (*p_chain, number_down_left);
 	State* p_ground_state = newGroundState (*p_ground_base);
 	Quantity* p_quantity = newQuantity(-1, *p_ground_state);
 // 	Quantity* p_minus = newQuantity(1, *p_ground_state);
 // 	Quantity* p_plus = newQuantity(-1, *p_ground_state);
-	
-	
+
+
 	p_ground_state->solve();
 /*
 	//_R4_s0_base-1-0-1_id0:
@@ -320,23 +320,23 @@ int run(void)
 	cout<<p_state->roots()<<endl;
 	cout<<( (XXXDeviatedState*) p_state)->calculateBetheI()<<endl;
 	return 0;
-*/	
+*/
 	int number_down_right = p_quantity->rightNumberDown();
 	vector< Base* > all_bases = allNewBases(p_chain, number_down_right, /* max_string_length= */ number_down_right, /* max_number_particles= */ number_down_right, /*max_number_spinons= */ number_down_right, /*max_infinite= */ 0);//p_quantity->maxInfinite());
-	
+
 	Stopwatch calculation_time;
-	
+
 // 	Matrix<REAL> basket (number_energy, number_sites);
 // 	AddToMatrixFunc bin_this (basket, max_energy);
-// 	AddToFileFunc dump_screen (cout, cerr); 
+// 	AddToFileFunc dump_screen (cout, cerr);
 	DumpRoots dump_roots;
 	cout.precision(15);
-	
+
 	REAL contrib=0.0;
 	for (int i=0; i<all_bases.size(); ++i) {
  		contrib += NEWscanBase (dump_roots, *p_quantity, all_bases[i], policy, acceptAlways, /* deviation_threshold= */ 1e-20);
-	}	
-	
+	}
+
 	cerr<<endl;
 	cerr<<contrib<<endl;
 	cerr<<dump_roots.sum<<endl;

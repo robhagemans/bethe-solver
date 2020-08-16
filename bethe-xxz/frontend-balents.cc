@@ -15,15 +15,15 @@ void makeDeltaE2 (ostream& outfile, const REAL delta, const int number_sites, co
 {
 	const char* here = "calculateDeltaE2";
 	const int max_base_size=CUTOFF_TYPES;
-	
+
 	// construct the base of the file name
 	stringstream description;
 	description << "*" << nameFromValue(mon_Delta, delta) << nameFromValue(mon_Length, number_sites) << nameFromValue(mon_LeftDown, left_number_down, fieldWidth(number_sites));
 	// look for input files with these values
 	vector<string> input_file_long = ls(Longitudinal::ff_name + description.str() + "*.result");
 	vector<string> input_file_trans = ls(Transverse::ff_name + description.str() + "*.result");
-	
-	
+
+
 	REAL sum = 0.0;
 	for (int i=0; i< input_file_long.size(); ++i) {
 		ifstream infile (input_file_long[i].c_str());
@@ -36,13 +36,13 @@ void makeDeltaE2 (ostream& outfile, const REAL delta, const int number_sites, co
 		while ( readFormFactor(infile, id, index_momentum, momentum, energy, form_factor, convergence, iter, newt, deviation) ) {
 			base_sum += sq(form_factor) * sq(cos(0.5*momentum)) ;
 			// if we only have a half zone, everything not on the zone boundary has to be counted double.
-			if ( half_zone && (index_momentum >0) && (index_momentum < number_sites/2)) 
+			if ( half_zone && (index_momentum >0) && (index_momentum < number_sites/2))
 				base_sum += sq(form_factor) * sq(cos(0.5*momentum));
 		}
 		sum += base_sum;
 		infile.close();
 	}
-	
+
 	for (int i=0; i< input_file_trans.size(); ++i) {
 		ifstream infile (input_file_trans[i].c_str());
 		// does the name contain "hbz"? if so, it is a half Brillouin zone.
@@ -54,16 +54,16 @@ void makeDeltaE2 (ostream& outfile, const REAL delta, const int number_sites, co
 		while ( readFormFactor(infile, id, index_momentum, momentum, energy, form_factor, convergence, iter, newt, deviation) ) {
 			base_sum += sq(form_factor) * sq(cos(0.5*momentum)) ;
 			// if we only have a half zone, everything not on the zone boundary has to be counted double.
-			if ( half_zone && (index_momentum >0) && (index_momentum < number_sites/2)) 
+			if ( half_zone && (index_momentum >0) && (index_momentum < number_sites/2))
 				base_sum += sq(form_factor) * sq(cos(0.5*momentum));
 		}
 		sum += 2.0 * base_sum;
 		infile.close();
 	}
-	
+
 	Chain* p_chain = newChain (delta, number_sites);
 	REAL field = magneticField(*p_chain, left_number_down);
-	
+
 	outfile.precision(20);
 	outfile.setf(ios::fixed);
 	outfile << left_number_down <<SEP<< field <<SEP<< sum <<endl;
@@ -78,8 +78,8 @@ int run(void)
 	cerr<<"delta N M"<<endl;
 	cin >> delta >> number_sites >> left_number_down;
 	cerr<< "input complete"<<endl;
-	
+
 	makeDeltaE2 (cout, delta, number_sites, left_number_down);
-	
+
 	return 0;
 }

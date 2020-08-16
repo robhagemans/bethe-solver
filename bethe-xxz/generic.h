@@ -41,7 +41,7 @@ extern const char* exc_Deviated; 			// solve()
 
 
 /** file names **/
-// a file name consists of moniker-value pairs started by a Quantity.name(), separated by sep_Name and terminated by sep_Final plus an extension 
+// a file name consists of moniker-value pairs started by a Quantity.name(), separated by sep_Name and terminated by sep_Final plus an extension
 
 // separators
 extern const string sep_Name;
@@ -50,12 +50,12 @@ extern const string sep_Vector;
 
 // monikers
 extern const string mon_File;	// file format moniker
-extern const string mon_Base;	
+extern const string mon_Base;
 extern const string mon_Delta;
 extern const string mon_Length;
-extern const string mon_LeftDown; 
+extern const string mon_LeftDown;
 extern const string mon_RightDown;
-extern const string mon_Spinon; 
+extern const string mon_Spinon;
 
 // number of characters needed to display positive integer number
 inline int fieldWidth (const int number) { return 1+int( floor(log(1.0*number)/log(10.0)) ); };
@@ -72,7 +72,7 @@ string valueFromName(const string name, const string moniker);
 
 // the name of a base
 string name(const BaseData& base_data);
-string name(const Base* const p_base); 
+string name(const Base* const p_base);
 // the name of a chain. if (left) number_down != 0, a magnetisation name is added
 string name(const Chain* const p_chain, const int number_down=0);
 
@@ -87,13 +87,13 @@ State* copy (State* const p_state) ;
 
 // convert a name into a new chain
 Chain* newChain (const string name, const int cutoff_types=CUTOFF_TYPES);
-// convert a name into a new base (and a new chain if p_chain equals zero) 
+// convert a name into a new base (and a new chain if p_chain equals zero)
 Base* newBase (const string name, Chain*& p_chain);
 BaseData readBaseData (const string name);
 
 // create a new chain form given data
 Chain* newChain (const double delta, const int chain_length, const int cutoff_types = CUTOFF_TYPES);
-// create a new base 
+// create a new base
 Base* newBase (const Chain* const p_chain, const BaseData& base_data);
 Base* newBase (const Chain* const p_chain, const vector<int>& base_vec, const int number_spinons, const int number_infinite_rapidities = 0);
 Base* newBase (const Chain* const p_chain, const int number_down, const vector<int>& base_vec, const int number_spinons, const int number_infinite_rapidities = 0);
@@ -107,17 +107,17 @@ State* newState (const Base* const base, const long long int id) ;
 State* newState (const Base* const base, const vector<Young>& shifts) ;
 
 
-// create all bases ordered by particle content and create a list of pointers to them 
+// create all bases ordered by particle content and create a list of pointers to them
 vector<BaseData> allNewBases (
-	const Chain* const p_chain, const int number_down, 
+	const Chain* const p_chain, const int number_down,
 	const int max_string_length,			// cutoff string length
 	const int uptoinc_number_particles, 	// cutoff number particles
-	const int uptoinc_number_spinons, 		// cutoff number spinons 
-	const int max_infinite = 2 
+	const int uptoinc_number_spinons, 		// cutoff number spinons
+	const int max_infinite = 2
 );
 
 
-// generic solve 
+// generic solve
 State* solve(State* const p_state, const REAL deviation_threshold, const bool deviate = false);
 
 #endif

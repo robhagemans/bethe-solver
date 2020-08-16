@@ -37,7 +37,7 @@ int run(void)
 	Command_Line >> start_hole >> stop_hole;
 	///arguments<<*p_state<<SEP<<quantity;
 	Command_Line >> chain_name >> base_name >> id >> quantity_name >> left_base_name >> left_id;
-cerr<<id<<endl;	
+cerr<<id<<endl;
 	PVMSendFunc pvm_send_func;
 	try {
 		// create everything
@@ -52,10 +52,10 @@ cerr<<id<<endl;
 		Quantity* p_quantity = newQuantity (quantity_name, *p_left_state);
 		if (!p_quantity) throw Exception (here, exc_NullPointer, "quantity");
 		Stopwatch calculation_time;
-		/// policy, deviation_threshold and acceptfunc of calling function are currently ignored 
+		/// policy, deviation_threshold and acceptfunc of calling function are currently ignored
 		/// should really create PVMSlaveEngine or something, with sendfunc implied
 		LocalEngine engine (pvm_send_func, *p_quantity, DEFAULT_POLICY, acceptAlways, DEFAULT_DEVIATION_THRESHOLD, calculation_time);
-		// do the scan & send the results 
+		// do the scan & send the results
 		engine.startScan (p_state, start_hole, stop_hole);
 		// send the interval record (there's one and only one)
 		pvm_send_func.send (*p_base, engine.collect()->records[0].intervals[0]);
@@ -64,7 +64,7 @@ cerr<<id<<endl;
 		exc.remarks += "; parameters: " + command_line;
 		pvm_send_func.send (exc);
 	}
-	
+
 }
 
 

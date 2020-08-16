@@ -7,15 +7,15 @@
 /// NOTE: number lower than 4 screw things up.
 #define CUTOFF_TYPES 4
 
-	
+
 	/** XXX Chain: **/
-	
+
 	class XXX_Chain : public ::Chain {
 	public:
-		// create 
+		// create
 		XXX_Chain(const int chain_length, const int cutoff_types=CUTOFF_TYPES);
 		// copy
-		XXX_Chain(const Chain& original): Chain(original) { if (original.delta() != 1.0) throw Exception("XXXChain copy", exc_CopyMismatch); }; 
+		XXX_Chain(const Chain& original): Chain(original) { if (original.delta() != 1.0) throw Exception("XXXChain copy", exc_CopyMismatch); };
 		// destructor
 		virtual ~XXX_Chain(void) {};
 		// clone
