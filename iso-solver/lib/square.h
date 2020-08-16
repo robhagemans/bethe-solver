@@ -32,11 +32,11 @@ public:
 	Square (const Square& a, const Square& b); 	// initialize to tensor product of a and b
 	Square (const Square& a, int row_id, int col_id); // init by cutting row row_id and col col_id
 	~Square();
-	
+
 	inline number* operator[] (const int i) { return M[i]; };  		// subscripting: pointer to row i
 	inline const number* operator[] (const int i) const { return M[i]; };
 	inline int size() const { return dim; };
-	
+
 	Square& operator= (const Square& rhs);  		// assignment
 	Square& operator= (const number& a);        		// assign 1 to diagonal elements (NOT like in NR !!!)
 	Square& operator+= (const number& a);
@@ -52,7 +52,7 @@ public:
 /*************************************************************************************************/
 /*************************************************/
 /* from Numerical Recipes in C, section 2.1, p. 46:
-/* LU decomposition 
+/* LU decomposition
 /* and efficient determinant algorithm.
 /*
 /**/
@@ -93,7 +93,7 @@ Square<number>::Square (const Square& rhs) : dim(rhs.dim) , M(new number*[dim])
 	int i,j;
 	M[0] = new number[dim*dim];
 	for (i = 1; i < dim; i++) M[i] = M[i-1] + dim;
-	for (i = 0; i < dim; i++) 
+	for (i = 0; i < dim; i++)
 		for (j = 0; j < dim; j++) M[i][j] = rhs[i][j];
 }
 
@@ -104,24 +104,24 @@ Square<number>::Square (const number& a, int N) : dim(N) , M(new number*[dim])
 	M[0] = new number[dim*dim];
 	for (i = 1; i < dim; i++) M[i] = M[i-1] + dim;
 	for (i = 0; i < dim; i++) {
-		for (j = 0; j < dim; j++) M[i][j] = number(0);  // cast 
+		for (j = 0; j < dim; j++) M[i][j] = number(0);  // cast
 		M[i][i] = a;
 	}
 }
 
 template <class number>
-Square<number>::Square (const Square& a, const Square& b) : dim (a.dim * b.dim) , M(new number*[a.dim * b.dim]) 
+Square<number>::Square (const Square& a, const Square& b) : dim (a.dim * b.dim) , M(new number*[a.dim * b.dim])
 {
 	M[0] = new number[a.dim * b.dim * a.dim * b.dim];
 	for (int i = 1; i < a.dim * b.dim; ++i) M[i] = M[i-1] + a.dim * b.dim;
 
-	for (int i1 = 0; i1 < a.dim; ++i1) 
-	for (int i2 = 0; i2 < a.dim; ++i2) 
-	for (int j1 = 0; j1 < b.dim; ++j1) 
-	for (int j2 = 0; j2 < b.dim; ++j2) 
+	for (int i1 = 0; i1 < a.dim; ++i1)
+	for (int i2 = 0; i2 < a.dim; ++i2)
+	for (int j1 = 0; j1 < b.dim; ++j1)
+	for (int j2 = 0; j2 < b.dim; ++j2)
 		M[i1 * (b.dim) + j1][i2 * (b.dim) + j2] = a[i1][i2] * b[j1][j2];
 }
-	
+
 
 template <class number>
 Square<number>::Square (const Square& a, int row_id, int col_id) : dim (a.dim - 1) , M(new number*[dim])
@@ -145,8 +145,8 @@ Square<number>& Square<number>::operator= (const Square<number>& rhs)
 	if (this != &rhs) {
 		if (dim != rhs.dim) throw Exception ("Square::operator=", exc_IncompatibleSizes);
 
-		for (int i = 0; i < dim; ++i) 
-			for (int j = 0; j < dim; ++j) 
+		for (int i = 0; i < dim; ++i)
+			for (int j = 0; j < dim; ++j)
 				M[i][j] = rhs[i][j];
 	}
 	return *this;
@@ -156,7 +156,7 @@ template <class number>
 Square<number>& Square<number>::operator= (const number& a)
 {
 	for (int i = 0; i < dim; ++i) {
-		for (int j = 0; j < dim; ++j) 
+		for (int j = 0; j < dim; ++j)
 			M[i][j] = number(0);
 		M[i][i] = a;
 	}
@@ -166,7 +166,7 @@ return *this;
 template <class number>
 Square<number>& Square<number>::operator+= (const number& a)
 {
-	for (int i = 0; i < dim; ++i) 
+	for (int i = 0; i < dim; ++i)
 		M[i][i] += a;
 	return *this;
 }
@@ -175,8 +175,8 @@ template <class number>
 Square<number>& Square<number>::operator+= (const Square<number>& a)
 {
 	if (dim != a.dim) throw Exception ("Square::operator+", exc_IncompatibleSizes);
-	for (int i = 0; i < dim; ++i) 
-		for (int j = 0; j < dim; ++j) 
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
 			M[i][j] += a[i][j];
 	return *this;
 }
@@ -184,7 +184,7 @@ Square<number>& Square<number>::operator+= (const Square<number>& a)
 template <class number>
 Square<number>& Square<number>::operator-= (const number& a)
 {
-	for (int i = 0; i < dim; ++i) 
+	for (int i = 0; i < dim; ++i)
 		M[i][i] -= a;
 	return *this;
 }
@@ -194,8 +194,8 @@ Square<number>& Square<number>::operator-= (const Square<number>& a)
 {
 	if (dim != a.dim) throw Exception ("Square::operator-", exc_IncompatibleSizes);
 
-	for (int i = 0; i < dim; ++i) 
-		for (int j = 0; j < dim; ++j) 
+	for (int i = 0; i < dim; ++i)
+		for (int j = 0; j < dim; ++j)
 			M[i][j] -= a[i][j];
 	return *this;
 }
@@ -213,15 +213,15 @@ Square<number>& Square<number>::operator*= (const Square<number>& a)
 	if (dim != a.dim) throw Exception ("Square::operator*", exc_IncompatibleSizes);
 
 	Square<number> leftarg(*this);  // use copy constructor.
-	for (int i = 0; i < dim; ++i) 
+	for (int i = 0; i < dim; ++i)
 		for (int j = 0; j < dim; ++j) {
 			M[i][j] = 0.0;
-			for (int k = 0; k < dim; ++k) 
+			for (int k = 0; k < dim; ++k)
 				M[i][j] += leftarg[i][k] * a[k][j];
 		}
 	return *this;
 }
-  
+
 
 template <class number>
 Square<number>::~Square()
@@ -235,15 +235,15 @@ Square<number>::~Square()
 // outputting a square
 template<class number>
 ostream& operator<< (ostream& stream, Square<number> out_to_be_put) {
-	
+
 	if (!out_to_be_put.size()) return stream;
-	
+
 	for (int i=0; i< out_to_be_put.size(); ++i)	{
-		for (int j=0; j< out_to_be_put.size(); ++j)	
+		for (int j=0; j< out_to_be_put.size(); ++j)
 			stream << ' ' << out_to_be_put[i][j];
 		stream <<endl;
 	}
-	
+
 	return stream;
 }
 
@@ -254,7 +254,7 @@ ostream& operator<< (ostream& stream, Square<number> out_to_be_put) {
 /*************************************************************************************************/
 /*************************************************/
 /* from Numerical Recipes in C, section 2.1, p. 46:
-/* LU decomposition 
+/* LU decomposition
 /* and efficient determinant algorithm.
 /*
 /**/
@@ -308,7 +308,7 @@ template <class number>
 			d = -d;
 			vv[imax] = vv[j];
 		}
-		indx[j] = imax; 
+		indx[j] = imax;
 		if (a[j][j] == 0.0) a[j][j] = TINY;
 		if (j !=n-1) {
 			dum = 1.0/(a[j][j]);
@@ -331,7 +331,7 @@ template <class number>
     b[ip] = b[i];
     if (ii != 0)
       for (j = ii-1; j < i; j++) sum -= a[i][j] * b[j];
-    else if (sum != 0.0) 
+    else if (sum != 0.0)
       ii = i + 1;
     b[i] = sum;
   }

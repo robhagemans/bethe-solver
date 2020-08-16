@@ -6,7 +6,7 @@
 /*************************************************************************************************/
 /*************************************************/
 /* from Numerical Recipes in C, section 2.1, p. 46:
-/* LU decomposition 
+/* LU decomposition
 /* and efficient determinant algorithm.
 /*
 /**/
@@ -60,7 +60,7 @@ template <class number>
 			d = -d;
 			vv[imax] = vv[j];
 		}
-		indx[j] = imax; 
+		indx[j] = imax;
 		if (a[j][j] == 0.0) a[j][j] = TINY;
 		if (j !=n-1) {
 			dum = 1.0/(a[j][j]);
@@ -82,7 +82,7 @@ template <class number>
     b[ip] = b[i];
     if (ii != 0)
       for (j = ii-1; j < i; j++) sum -= a[i][j] * b[j];
-    else if (sum != 0.0) 
+    else if (sum != 0.0)
       ii = i + 1;
     b[i] = sum;
   }

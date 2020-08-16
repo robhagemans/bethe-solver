@@ -11,8 +11,8 @@ int main(int argc, char* argv[])
 		Command_Line << argv[argn] << "\t";
 		Arguments.push_back(new stringstream(argv[argn]));
 	}
-	
-	try {	
+
+	try {
 		return run();
 	}
 	catch (Exception error) {
@@ -51,6 +51,6 @@ int main(int argc, char* argv[])
 		cerr << "Unknown error. Sorry 'bout that. "<<endl;
 		return 1;
 	}
-	
+
 	for (int i=0; i < Arguments.size(); ++i) delete Arguments[i];
 }

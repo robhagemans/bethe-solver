@@ -25,7 +25,7 @@ public:
 	PVMEngine (AddFunc& the_addfunc, const Quantity& the_quantity, const Policy& the_policy, const AcceptFunc& the_accept, const REAL the_deviation_threshold, string the_task) : Engine (the_addfunc, the_quantity, the_policy, the_accept, the_deviation_threshold), executable(the_task) { p_result = new ScanIntervals (&quantity.leftState()); };
 	~PVMEngine (void) { pvm_exit(); };
 	void startScan (State* p_state, int start_hole, int stop_hole);
-	ScanIntervals* collect (void); 
+	ScanIntervals* collect (void);
 	void clear(void);
 };
 
@@ -37,7 +37,7 @@ public:
 	PVMSendFunc(void) : AddFunc() { if ((parent=pvm_parent()) == PvmNoParent) cerr<<"Warning: no pvm parent found"<<endl; }
 	~PVMSendFunc(void) { pvm_exit(); };
 	inline virtual void operator() (
-		long long int id, int index_momentum, REAL momentum, REAL energy, REAL form_factor, 
+		long long int id, int index_momentum, REAL momentum, REAL energy, REAL form_factor,
 		int converged, int iterations, int newt_iter, REAL deviation);
 /// these shouldn't be in this class...
 	void send (Exception exc);
@@ -45,14 +45,14 @@ public:
 };
 
 
-	
+
 /** test **/
 
 bool scanTEST (
-	AddFunc& addfunc, 
-	const Quantity& quantity, 
+	AddFunc& addfunc,
+	const Quantity& quantity,
 	vector<Base*>& p_bases,
-	const AcceptFunc& accept, 
+	const AcceptFunc& accept,
 	const REAL deviation_threshold,
 	const Policy policy,
 	Stopwatch& calculation_time,

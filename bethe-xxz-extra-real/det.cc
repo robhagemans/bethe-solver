@@ -19,12 +19,12 @@ REAL lndetDestroy (Square<REAL>& mat)
 	decomposeLU (mat, index, sign_permutation);
 	// log( 1.0*sign_permutation ); only possible with complex numbers
 	// but we're really doing log norm det.
-	REAL log_det = 0.0; 
-	for (int j = 0; j < mat.size(); j++) 
+	REAL log_det = 0.0;
+	for (int j = 0; j < mat.size(); j++)
 		// I've added an abs here to avoid taking the log of a negative number
 		// if we need the sign, get it separately.
 		log_det += log(fabs(mat[j][j]));
-	
+
 	return log_det;
 }
 REAL lndetDestroy (Square< complex<REAL> >& mat)
@@ -32,15 +32,15 @@ REAL lndetDestroy (Square< complex<REAL> >& mat)
 	vector<int> index(mat.size());
 	int sign_permutation;
 
-	decomposeLU (mat, index, sign_permutation);	
+	decomposeLU (mat, index, sign_permutation);
 	// log( 1.0*sign_permutation ); only possible with complex numbers
 	// but we're really doing log norm det.
 	REAL log_det = 0.0;
-	for (int j = 0; j < mat.size(); j++) 
+	for (int j = 0; j < mat.size(); j++)
 		// I've added an abs here to avoid taking the log of a negative number
 		// if we need the sign, get it separately.
 		log_det += log(abs(mat[j][j]));
-	
+
 	return log_det;
 }
 

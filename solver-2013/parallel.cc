@@ -30,18 +30,18 @@ void PVMEngine::startScan (
 	arguments << quantity.name() <<SEP<< name (quantity.leftState().base)+sep_Name <<SEP<< quantity.leftState().id();
 	// unload the stringstream into an array of c-strings
 	const int child_argc =  8;
-	char* child_argv[ child_argc+1 ];	
+	char* child_argv[ child_argc+1 ];
 	for (int i=0; i < child_argc; ++i) {
 		string whats_read;
 		if (!(arguments >> whats_read)) throw Exception (here, exc_BadInput);
-		child_argv[i] = new char[whats_read.length()+1]; 
+		child_argv[i] = new char[whats_read.length()+1];
 		strcpy (child_argv[i], whats_read.c_str());
 	}
 	child_argv[child_argc] = 0;
-	// copy to a non-const c-string 
+	// copy to a non-const c-string
 	/// there must be a better way...
-	char task[executable.length()]; 
-	strcpy (task, executable.c_str());	
+	char task[executable.length()];
+	strcpy (task, executable.c_str());
 	// spawn the task
 	int numt = pvm_spawn(task, child_argv, PvmTaskDefault, (char*)0, 1, &tid);
 	if (1 != numt) throw Exception(here, exc_PVMSpawnFailed);
@@ -51,7 +51,7 @@ void PVMEngine::startScan (
 	processes.push_back(tid);
 }
 
-ScanIntervals* PVMEngine::collect(void) 
+ScanIntervals* PVMEngine::collect(void)
 {
 	const char* here = "PVMEngine::collect";
 	int  i=0;
@@ -67,7 +67,7 @@ ScanIntervals* PVMEngine::collect(void)
 			while (bufid = pvm_nrecv(tid, msg_Exception )) {
 				int buffer_size=0, dummy;
 				pvm_bufinfo(bufid, &buffer_size, (int*)0, (int*)0 );
-				char buffer[buffer_size+1]; 
+				char buffer[buffer_size+1];
 				// unpack the message to a c-string
 				pvm_upkstr(buffer);
 				// and log it
@@ -79,7 +79,7 @@ ScanIntervals* PVMEngine::collect(void)
 			while (bufid = pvm_nrecv(tid, msg_Result )) {
 				int buffer_size=0;
 				pvm_bufinfo(bufid, &buffer_size, (int*)0, (int*)0 );
-				char buffer[buffer_size+1]; 
+				char buffer[buffer_size+1];
 				// unpack the message to a c-string
 				pvm_upkstr(buffer);
 				// convert this to something we can read
@@ -90,17 +90,17 @@ ScanIntervals* PVMEngine::collect(void)
 				long long int id;
 				int index_momentum, converged, iterations, newton_iterations;
 				REAL momentum, energy, form_factor, deviation;
-				readFormFactor (converter, id, index_momentum, momentum, energy, form_factor, converged, iterations, newton_iterations, deviation);		
+				readFormFactor (converter, id, index_momentum, momentum, energy, form_factor, converged, iterations, newton_iterations, deviation);
 				// process the data
 				///addfunc(*p_state);
 				addfunc(id, index_momentum, momentum, energy, form_factor, converged, iterations, newton_iterations, deviation);
 			}
-			
-			// receive the summary 
+
+			// receive the summary
 			if (bufid = pvm_nrecv(tid, msg_Summary)) {
 				int buffer_size=0;
 				pvm_bufinfo(bufid, &buffer_size, (int*)0, (int*)0 );
-				char buffer[buffer_size+1]; 
+				char buffer[buffer_size+1];
 				// get the data
 				pvm_upkstr(buffer);
 				stringstream converter;
@@ -108,7 +108,7 @@ ScanIntervals* PVMEngine::collect(void)
 				// read the data
 				Interval done_interval;
 				string base_name, chain_name;
-				
+
 				converter >> chain_name >> base_name >> done_interval;
 				// insert the summary into our intervals list
 				Chain* p_chain = newChain (chain_name);
@@ -129,9 +129,9 @@ ScanIntervals* PVMEngine::collect(void)
 	}
 	return p_result;
 }
- 
- 
-void PVMEngine::clear(void) 
+
+
+void PVMEngine::clear(void)
 {
 	// kill all children, if any
 	for (int i=0; i< processes.size(); ++i) pvm_kill(processes[i]);
@@ -146,22 +146,22 @@ void PVMEngine::clear(void)
 
 
 inline void PVMSendFunc::operator() (
-	long long int id, int index_momentum, REAL momentum, REAL energy, REAL form_factor, 
-	int converged, int iterations, int newt_iter, REAL deviation) 
-{   
+	long long int id, int index_momentum, REAL momentum, REAL energy, REAL form_factor,
+	int converged, int iterations, int newt_iter, REAL deviation)
+{
 	// format the output
 	stringstream output;
 	output.precision (FILE_PRECISION);
 	output 	<< id <<SEP<< index_momentum<<SEP<< momentum <<SEP<< energy <<SEP<< form_factor <<SEP
-			<< converged <<SEP<< iterations <<SEP<< newt_iter <<SEP<< deviation <<endl; 	
-			
+			<< converged <<SEP<< iterations <<SEP<< newt_iter <<SEP<< deviation <<endl;
+
 	if (parent == PvmNoParent) {
 		// we're called locally. output to stdout.
 		cout << output.str() <<endl;
 	}
 	else {
 		// copy to avoid lack of const qualifier (wasn't there some cast for that?)
-		char output_cstr [output.str().length()+1]; 
+		char output_cstr [output.str().length()+1];
 		strcpy (output_cstr, output.str().c_str());
 		// clear send buffer
 		pvm_initsend( PvmDataRaw );
@@ -173,7 +173,7 @@ inline void PVMSendFunc::operator() (
 };
 
 
-void PVMSendFunc::send (Exception exc) 
+void PVMSendFunc::send (Exception exc)
 {
 	// send as one string
 	string message = exc.location + ": " + exc.error + " " + exc.remarks;
@@ -182,7 +182,7 @@ void PVMSendFunc::send (Exception exc)
 		cerr << message <<endl;
 	}
 	else {
-		char output_cstr [message.length()+1]; 
+		char output_cstr [message.length()+1];
 		strcpy (output_cstr, message.c_str());
 		// clear send buffer
 		pvm_initsend( PvmDataRaw );
@@ -194,7 +194,7 @@ void PVMSendFunc::send (Exception exc)
 };
 
 
-void PVMSendFunc::send (const Base& base, const Interval& summary) 
+void PVMSendFunc::send (const Base& base, const Interval& summary)
 {
 	// send as one string
 	stringstream message;
@@ -204,7 +204,7 @@ void PVMSendFunc::send (const Base& base, const Interval& summary)
 		cerr << message.str() <<endl;
 	}
 	else {
-		char output_cstr [message.str().length()+1]; 
+		char output_cstr [message.str().length()+1];
 		strcpy (output_cstr, message.str().c_str());
 		// clear send buffer
 		pvm_initsend( PvmDataRaw );
@@ -214,17 +214,17 @@ void PVMSendFunc::send (const Base& base, const Interval& summary)
 		pvm_send(parent, PVMEngine::msg_Summary);
 	}
 };
-	
-	
-	
-	
-/** should be moved back to scan.cc after PVMEngine is take out of this part **/	
-	
+
+
+
+
+/** should be moved back to scan.cc after PVMEngine is take out of this part **/
+
 bool scanTEST (
-	AddFunc& addfunc, 
-	const Quantity& quantity, 
+	AddFunc& addfunc,
+	const Quantity& quantity,
 	vector<Base*>& p_bases,
-	const AcceptFunc& accept, 
+	const AcceptFunc& accept,
 	const REAL deviation_threshold,
 	const Policy policy,
 	Stopwatch& calculation_time,
@@ -234,31 +234,31 @@ bool scanTEST (
 	const char* here = "scan";
 	if (threshold_factor >= 1.0) throw Exception (here, exc_ThresholdOne);
 	if (contribution_threshold >= 1.0) throw Exception (here, exc_ThresholdOne);
-		
+
 	// create empty interval object
 	ScanIntervals all_scan_interval (&quantity.leftState());
 	ScanIntervals run_scan_interval (&quantity.leftState());
 	ScanIntervals* p_last_scan_interval = new ScanIntervals  (&quantity.leftState());
 	ScanIntervals* p_scan_result = 0;
-	
+
 	//LocalEngine engine (addfunc, quantity, policy, accept, deviation_threshold, calculation_time);
 	PVMEngine engine (addfunc, quantity, policy, accept, deviation_threshold, "parallelslave");
-	
+
 	addfunc.logstream <<"threshold 1.0"<<endl;
-	
+
 	for (int i=0; i< p_bases.size(); ++i) {
 		addfunc.logstream <<"base "<<name(*p_bases[i])<<endl;
-		scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval, 1.0, true, p_bases[i]); 
+		scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval, 1.0, true, p_bases[i]);
 	}
 	all_scan_interval.merge(*engine.collect());
 	engine.clear();
-	addfunc.logstream <<"cumulative "<<all_scan_interval.numberCalculated()<<SEP<<all_scan_interval.contribution() <<endl;	
+	addfunc.logstream <<"cumulative "<<all_scan_interval.numberCalculated()<<SEP<<all_scan_interval.contribution() <<endl;
 	// steadily decrease threshold in steps of threshold_factor (<1.0)
 	for (REAL threshold = threshold_factor; threshold >= contribution_threshold; threshold*=threshold_factor) {
 		addfunc.logstream<< "threshold "<<threshold<<endl;
 		sort (p_bases.begin(), p_bases.end(), BaseComparator(all_scan_interval));
-		
-		
+
+
 		///
 		for (int j=0; j<p_bases.size();++j) cerr<<name(*p_bases[j])<<SEP<<all_scan_interval.averageContribution(p_bases[j])<<endl;
 		cerr<<endl;
@@ -270,59 +270,59 @@ bool scanTEST (
 			addfunc.logstream<< "base "<<name(*p_bases[i])<<endl;
 
 			// extend scan
-			scanRecursiveTEST (engine, all_scan_interval, run_scan_interval, p_last_scan_interval, threshold, true, p_bases[i]); 
+			scanRecursiveTEST (engine, all_scan_interval, run_scan_interval, p_last_scan_interval, threshold, true, p_bases[i]);
 			p_scan_result = engine.collect();
 			run_scan_interval.merge(*p_scan_result);
-			
-			do { 
+
+			do {
 				// all_scan_interval should remain the same throughout one threshold-base-run
 				// as it determines the way the tree is searched
 				// last_scan_interval should always have only the results of the last sub-run
 				// scan_interval should contain everything from this run.
-				
+
 				/// TODO: this solution is excessively ugly now that p_scan_result points to a member of engine
 				delete p_last_scan_interval;
 				p_last_scan_interval = p_scan_result;
 				p_scan_result = new ScanIntervals  (&quantity.leftState());
-				
+
 				// sniff scan
-				scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval, threshold, false, p_bases[i]); 
+				scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval, threshold, false, p_bases[i]);
 				p_scan_result = engine.collect();
 				run_scan_interval.merge(*p_scan_result);
-				
+
 			} while (p_scan_result->numberCalculated());
-			
+
 			all_scan_interval.merge(run_scan_interval);
 			run_scan_interval.clear();
-			engine.clear();	
+			engine.clear();
 		}
-		addfunc.logstream<< "cumulative "<<all_scan_interval.numberCalculated()<<SEP<<all_scan_interval.contribution() <<endl;	
+		addfunc.logstream<< "cumulative "<<all_scan_interval.numberCalculated()<<SEP<<all_scan_interval.contribution() <<endl;
 	}
-	
+
 	addfunc.logstream<< "threshold "<<contribution_threshold<<endl;
 	for (int i=0; i< p_bases.size(); ++i) {
 		addfunc.logstream<< "base "<<name(*p_bases[i])<<endl;
-		
-		scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval, contribution_threshold, true, p_bases[i]); 
+
+		scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval, contribution_threshold, true, p_bases[i]);
 		p_scan_result = engine.collect();
 		run_scan_interval.merge(*p_scan_result);
-		
-		do { 
+
+		do {
 			// all_scan_interval should remain the same throughout one threshold-base-run
 			// as it determines the way the tree is searched
 			// last_scan_interval should always have only the results of the last sub-run
 			// scan_interval should contain everything from this run.
-			
+
 			delete p_last_scan_interval;
 			p_last_scan_interval = p_scan_result;
 			ScanIntervals* p_scan_result = new ScanIntervals  (&quantity.leftState());
 
-			scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval,  contribution_threshold, false, p_bases[i]); 
+			scanRecursiveTEST(engine, all_scan_interval, run_scan_interval, p_last_scan_interval,  contribution_threshold, false, p_bases[i]);
 			p_scan_result = engine.collect();
 			run_scan_interval.merge(*p_scan_result);
-		
+
 		} while (p_scan_result->numberCalculated());
-		
+
 		all_scan_interval.merge(run_scan_interval);
 		run_scan_interval.clear();
 		engine.clear();

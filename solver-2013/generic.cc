@@ -12,7 +12,7 @@ const string mon_LeftDown = "M";
 const string mon_RightDown = "R";
 const string mon_Spinon = "s";
 
-const string sep_Name = "_"; 
+const string sep_Name = "_";
 const string sep_Final = ".";
 const string sep_Vector = "-";
 
@@ -30,13 +30,13 @@ const char* exc_Deviated = "bethe strings deviated";	//solve()
 /** generic construction **/
 /** new chain **/
 
-Chain* newChain (const double delta, const int chain_length, const int cutoff_types) 
+Chain* newChain (const double delta, const int chain_length, const int cutoff_types)
 {
 	const string here = "newChain";
 	if (delta > 1.0) return new Gap_Chain (delta, chain_length, cutoff_types);
 	if (delta == 1.0) return new XXX_Chain (chain_length, cutoff_types);
 	if ((delta < 1.0) && (delta > 0.0)) return new XXZ_Chain (delta, chain_length);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 /** new base **/
@@ -44,10 +44,10 @@ Chain* newChain (const double delta, const int chain_length, const int cutoff_ty
 Base* newBase (const Chain* const p_chain, const BaseData& base_data) {
 	const string here = "newBase";
 	if (p_chain->delta() == 1.0) return new XXX_Base (p_chain, base_data);
-// 	if (number_infinite_rapidities) throw Exception (here, exc_InfiniteRaps);	
+// 	if (number_infinite_rapidities) throw Exception (here, exc_InfiniteRaps);
 	if (p_chain->delta() > 1.0) return new Gap_Base (p_chain, base_data);
 	if ((p_chain->delta() < 1.0) && (p_chain->delta() > 0.0)) return new XXZ_Base (p_chain, base_data);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 
@@ -55,20 +55,20 @@ Base* newBase (const Chain* const p_chain, const vector<int>& base_vec, const in
 {
 	const string here = "newBase";
 	if (p_chain->delta() == 1.0) return new XXX_Base (p_chain, base_vec, number_spinons, number_infinite_rapidities);
-	if (number_infinite_rapidities) throw Exception (here, exc_InfiniteRaps);	
+	if (number_infinite_rapidities) throw Exception (here, exc_InfiniteRaps);
 	if (p_chain->delta() > 1.0) return new Gap_Base (p_chain, base_vec, number_spinons);
 	if ((p_chain->delta() < 1.0) && (p_chain->delta() > 0.0)) return new XXZ_Base (p_chain, base_vec, number_spinons);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 Base* newBase (const Chain* const p_chain, const int number_down, const vector<int>& base_vec, const int number_spinons, const int number_infinite_rapidities)
 {
 	const string here = "newBase";
 	if (p_chain->delta() == 1.0) return new XXX_Base (p_chain, number_down, base_vec, number_spinons, number_infinite_rapidities);
-	if (number_infinite_rapidities) throw Exception (here, exc_InfiniteRaps);	
+	if (number_infinite_rapidities) throw Exception (here, exc_InfiniteRaps);
 	if (p_chain->delta() > 1.0) return new Gap_Base (p_chain, number_down, base_vec, number_spinons);
 	if ((p_chain->delta() < 1.0) && (p_chain->delta() > 0.0)) return new XXZ_Base (p_chain, number_down, base_vec, number_spinons);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 Base* newGroundBase (const Chain* const p_chain, const int number_down)
@@ -77,51 +77,51 @@ Base* newGroundBase (const Chain* const p_chain, const int number_down)
 	if (p_chain->delta() > 1.0) return new Gap_Base (p_chain, number_down);
 	if (p_chain->delta() == 1.0) return new XXX_Base (p_chain, number_down);
 	if ((p_chain->delta() < 1.0) && (p_chain->delta() > 0.0)) return new XXZ_Base (p_chain, number_down);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 
 /** new state **/
 
-State* newGroundState (const Base* const p_base) 
+State* newGroundState (const Base* const p_base)
 {
 	const string here = "newGroundState";
 	if (p_base->p_chain->delta() > 1.0) return new Gap_State (p_base);
 	if (p_base->p_chain->delta() == 1.0) return new XXX_State (p_base);
 	if ((p_base->p_chain->delta() < 1.0) && (p_base->p_chain->delta() > 0.0)) return new XXZ_State (p_base);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
-State* newState (const Base* const p_base, const long long int id) 
+State* newState (const Base* const p_base, const long long int id)
 {
 	const string here = "newState";
 	if (p_base->p_chain->delta() > 1.0) return new Gap_State (p_base, id);
 	if (p_base->p_chain->delta() == 1.0) return new XXX_State (p_base, id);
 	if ((p_base->p_chain->delta() < 1.0) && (p_base->p_chain->delta() > 0.0)) return new XXZ_State (p_base, id);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
-State* newState (const Base* const p_base, const vector<Young>& shifts) 
+State* newState (const Base* const p_base, const vector<Young>& shifts)
 {
 	const string here = "newState";
 	if (p_base->p_chain->delta() > 1.0) return new Gap_State (p_base, shifts);
 	if (p_base->p_chain->delta() == 1.0) return new XXX_State (p_base, shifts);
 	if ((p_base->p_chain->delta() < 1.0) && (p_base->p_chain->delta() > 0.0)) return new XXZ_State (p_base, shifts);
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 
 /** clone **/
 
 // TODO: replace by State::clone()
-State* copy (State* const p_state) 
+State* copy (State* const p_state)
 {
 	const string here = "State* copy";
 	if (!p_state) throw Exception (here, exc_NullPointer);
 	if (p_state->p_chain->delta() > 1.0) return new Gap_State ( *( (Gap_State*) p_state ));
 	if (p_state->p_chain->delta() == 1.0) 	return new XXX_State ( *( (XXX_State*) p_state ));
 	if ((p_state->p_chain->delta() < 1.0) && (p_state->p_chain->delta() > 0.0)) return new XXZ_State ( *( (XXZ_State*) p_state ));
-	throw Exception (here, exc_Ferro);	
+	throw Exception (here, exc_Ferro);
 }
 
 
@@ -199,7 +199,7 @@ string valueFromName(const string name, const string moniker)
 
 
 /** base name **/
-string name(const BaseData& base_data) 
+string name(const BaseData& base_data)
 {
 	stringstream the_name;
 	//the_name.precision(3);
@@ -207,7 +207,7 @@ string name(const BaseData& base_data)
 	return the_name.str();
 }
 
-string name(const Base* const p_base) 
+string name(const Base* const p_base)
 {
 	stringstream the_name;
 	//the_name.precision(3);
@@ -221,12 +221,12 @@ string name(const Chain* const p_chain, const int number_down)
 	const char* here = "name";
 	stringstream description;
 	description << sep_Name << mon_File;
-		
+
 	if (p_chain->delta() <= 0) throw Exception (here, exc_NegativeAnisotropy);
 	if (p_chain->delta() == 1.0) description << "_xxx";
 	if (p_chain->delta() > 1.0) description << "_xxz-gap";
 	if (p_chain->delta() < 1.0) description << "_xxz";
-	
+
 	description << nameFromValue(mon_Delta, p_chain->delta());
 	description << nameFromValue(mon_Length, p_chain->length());
 	if (number_down) description << nameFromValue (mon_LeftDown, number_down, fieldWidth(p_chain->length()) ); // all fields from 1 to N/2 equally wide
@@ -234,11 +234,11 @@ string name(const Chain* const p_chain, const int number_down)
 }
 
 // convert a name into a chain
-Chain* newChain (const string name, const int cutoff_types) 
-{	
+Chain* newChain (const string name, const int cutoff_types)
+{
 	REAL delta = realValueFromName (name, mon_Delta);
 	int chain_length = intValueFromName (name, mon_Length);
-	return newChain (delta, chain_length, cutoff_types); 
+	return newChain (delta, chain_length, cutoff_types);
 }
 
 
@@ -247,7 +247,7 @@ Base* newBase (const string name, Chain*& p_chain)
 {
 	const string here = "newBase";
 	// if no chain is defined, get our own (note: passing a literal zero for Chain* guarantees trouble, you need to keep the result!)
-	
+
 	int right_number_down = intValueFromName(name, mon_RightDown); // number of down spins (right side) incl. infinite
 	int number_spinons = intValueFromName(name, mon_Spinon);
 	vector<string> base_elements = explode(valueFromName(name, mon_Base), sep_Vector);
@@ -286,11 +286,11 @@ BaseData readBaseData (const string name) {
 
 /** scan through bases, particle/spinon ordered **/
 vector<BaseData> allNewBases (
-	const Chain* const p_chain, const int number_down, 
+	const Chain* const p_chain, const int number_down,
 	const int max_string_length,
 	const int uptoinc_number_particles, const int uptoinc_number_spinons,
 	const int max_infinite
-) 
+)
 {
 	vector<BaseData> all_bases;
 	vector<int> basevec (1, 0); // set dummy first element
@@ -300,12 +300,12 @@ vector<BaseData> allNewBases (
 	//int max_infinite = (p_chain->delta() == 1.0) ?2 :0;
 	while (number_particles <= min(uptoinc_number_particles, number_down)) {
 		limits_exceeded = false;
-		// every higher excitation contributes itself as a particle 
+		// every higher excitation contributes itself as a particle
 		int number_higher_particles = 0;
 		for (int i=1; i < basevec.size(); ++i) number_higher_particles += basevec[i] ;
 		if (number_higher_particles > number_particles) limits_exceeded=true; // all particles must be higher particles
 		// we must fit the available number of particles exactly, so we need an even number of spinons+holes remaining.
-		else if (number_higher_particles == number_particles) { 
+		else if (number_higher_particles == number_particles) {
 			for (int number_spinons = 0; number_spinons <= min(uptoinc_number_spinons, number_down); ++number_spinons ) {
 				for (int number_infinite=0; number_infinite <= max_infinite; ++number_infinite){
 					try {
@@ -327,7 +327,7 @@ vector<BaseData> allNewBases (
 				}
 			}
 		}
-		// find out where to increase 
+		// find out where to increase
 		int number_excited;
 		int type_to_increase = 1;
 		if (limits_exceeded) type_to_increase = last_type_increased +1;
@@ -343,7 +343,7 @@ vector<BaseData> allNewBases (
 		if (type_to_increase >= basevec.size()) basevec.push_back(0);
 		++basevec[type_to_increase];
 		last_type_increased = type_to_increase;
-	}	
+	}
 	return all_bases;
 }
 
@@ -358,18 +358,18 @@ State* solve(
 )
 {
 	const char* here = "::solve()";
-	// don't clone, just copy 
+	// don't clone, just copy
 	// cloning only necessary when deviating
-	// TODO: by separating id info from solving and roots, we could 
+	// TODO: by separating id info from solving and roots, we could
 	// do this as fast and much more elegantly.
 	State* p_state = p_state_in;
-	
+
 	// solve the Bethe Equations up to convergence
-	if (p_state->solve()) { 
+	if (p_state->solve()) {
 		// our state has converged
 		REAL deviation = p_state->stringDeviation();
 		// our core business: calculate form factor
-		if (deviation < deviation_threshold) return p_state; 
+		if (deviation < deviation_threshold) return p_state;
 		else if (deviate && p_state->p_chain->delta()==1.0) {
 			XXXDeviatedState* p_dev_state = new XXXDeviatedState ( *p_state );
 			if (!p_dev_state->solve()) {

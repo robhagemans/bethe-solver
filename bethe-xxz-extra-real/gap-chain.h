@@ -5,9 +5,9 @@
 #include "bethe.h"
 #include "chain.h"
 
-	
+
 	/** Gapped Chain: **/
-	
+
 	class Gap_Chain : public ::Chain {
 	public:
 		// construct

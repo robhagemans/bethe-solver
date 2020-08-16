@@ -8,7 +8,7 @@
 /*************************************************************************************************/
 /*************************************************/
 /* from Numerical Recipes in C, section 2.1, p. 46:
-/* LU decomposition 
+/* LU decomposition
 /* and efficient determinant algorithm.
 /*
 /**/

@@ -7,14 +7,14 @@ const char* exc_InvalidID = "invalid id"; //young()
 
 
 /** factorial **/
-long long int factorial (int n) 
+long long int factorial (int n)
 {
 	const char* here = "factorial";
-	
+
 	long long int fac = 1;
 	for (int i=2; i <= n; ++i) {
 		fac *= i;
-		if (fac<0) throw Exception (here, exc_Overflow); 
+		if (fac<0) throw Exception (here, exc_Overflow);
 	}
 	return fac;
 }
@@ -26,13 +26,13 @@ long long int choose (int upper, int lower)
 	if ((upper < 0)||(lower<0)) return 0;
 	if (upper < lower) return 0;
 	if (upper == lower) return 1;
-	
+
 	// don't do unnecessary work with overflow risk
 	if (lower>(upper-lower)) lower = upper-lower;
 	long long int num = 1;
 	for (int i=1; i <= int(lower); ++i) {
 		num *= upper- i +1;
-		
+
 		// keep numbers from overflowing while not losing exactness
 		if (num%i) throw Exception (here, exc_Overflow);
 			// they really should always be divisible!
@@ -50,32 +50,32 @@ long long int choose (int upper, int lower)
 /// NOTE: I currently create them at their max_size. this is bad for large (e.g. N=8000) chains, the tableaux are just too big!
 
 // construct young tableau (a vector of its row widths) from id number
-Young::Young (const int max_width, const int max_height, const long long int id): rows(max_height) 
-{ 
-	setId(max_width, max_height, id); 
+Young::Young (const int max_width, const int max_height, const long long int id): rows(max_height)
+{
+	setId(max_width, max_height, id);
 	if (!height) rows.resize(1,0);
 } ;
-	
+
 // convert vector<int> to Young
-Young::Young (const int max_width, const int max_height, const std::vector<int>& row_widths) : rows(max_height), width(max_width), height(max_height) 
-{ 
+Young::Young (const int max_width, const int max_height, const std::vector<int>& row_widths) : rows(max_height), width(max_width), height(max_height)
+{
 	for (int i=0; i< row_widths.size(); ++i) rows[i] = row_widths[i];
 	if (!height) rows.resize(1,0);
 };
 
 // copy
-Young::Young (const Young& original) : rows(original.rows), width(original.width), height(original.height) 
-{ 
+Young::Young (const Young& original) : rows(original.rows), width(original.width), height(original.height)
+{
 	if (!height) rows.resize(1,0);
 };
-	
+
 
 Young& Young::operator= (const Young& rhs)
 {
 	if (this != &rhs) {
 		width = rhs.width;
 		height = rhs.height;
-		// assign the vector part. 
+		// assign the vector part.
 		rows = rhs.rows;
 	}
 	return *this;
@@ -99,8 +99,8 @@ int Young::readAt (const int index) const
 
 int& Young::writeAt (const int index) {
 	const char* here = "int& Young::at";
-	
-	if ((index >= height) || (index < 0)) {	
+
+	if ((index >= height) || (index < 0)) {
 		throw Exception (here, exc_IndexRange);
 	}
 	// we try to write to index bigger than we have yet, but legal, so resize
@@ -115,7 +115,7 @@ void Young::setId (const int max_width, const int max_height, long long int id)
 	width=max_width;
 	height=max_height;
 	rows.clear();
-	
+
 
 	if ((id<0) || (id>=choose(max_height+max_width, max_width))) {
 		stringstream remark;
@@ -123,7 +123,7 @@ void Young::setId (const int max_width, const int max_height, long long int id)
 		throw Exception (here, exc_InvalidID, remark.str());
 	}
 	if (!height) return;
-	
+
 	// for historic reasons I construct the transpose, then transpose
 	int last_height = max_height;
 	long long int last_chs=0;
@@ -147,31 +147,31 @@ long long int Young::id (void) const
 {
 	if (!height) return 0;
 	if (!rows.size()) return 0;
-	
+
  	// we'd like to know the heights
  	Young tp (height, width);
-	for (int i=0; (i < rows.size()) && (i<height) && readAt(i); ++i) 
-		for (int j=0; j < readAt(i); ++j) 
+	for (int i=0; (i < rows.size()) && (i<height) && readAt(i); ++i)
+		for (int j=0; j < readAt(i); ++j)
 			++tp.writeAt(j); // Young::at() (and Young::operator[]) resize if necessary
-	
+
 	// why does this work? anyone?
 	long long int id = 0;
 	for (int column=0; column < width; ++column)
 		id += choose (width - column + tp.readAt(column)-1, width - column);
 		// this equals the number of tableaux of width (width-column) ==the width right of and including the current column
 		// and height (tp[column]-1) == height of current column *minus one*.
-		// in other words, at every column we add the number of diagrams that could possibly be 
+		// in other words, at every column we add the number of diagrams that could possibly be
 		// fit in the space from at its column, to the right; and from above its top, to top.
 		// e.g. at width=5, height=3,
 		//   ***xx
 		//   ***o
 		//   **
 		// we're considering the box at o. then we count everything possible that fits in xx (3 diagrams).
-		// which is the number of diagrams that went before this one, at this stage: 
+		// which is the number of diagrams that went before this one, at this stage:
 		// we count 0 ; 1 ; 2  ; 3 ;  4 ;  5
-		//          . ; * ; ** ; * ; ** ; ** 
+		//          . ; * ; ** ; * ; ** ; **
 		//                       *   *    **
-		
+
 	return id;
 }
 
@@ -188,8 +188,8 @@ Young& Young::transpose (void)
 	if (!rows.size()) return (*this);
 	// rebuild as transpose
 	rows.clear();
-	for (int i=0; (i < tp.rows.size()) && (i<tp.height) && tp.readAt(i) ; ++i) 
-		for (int j=0; j < tp.readAt(i); ++j) 
+	for (int i=0; (i < tp.rows.size()) && (i<tp.height) && tp.readAt(i) ; ++i)
+		for (int j=0; j < tp.readAt(i); ++j)
 			++writeAt(j);
 	return (*this);
 }
@@ -215,17 +215,17 @@ ostream& operator<< (ostream& stream, Young out_to_be_put) {
 	stream<<" w "<<out_to_be_put.width<<" h "<<out_to_be_put.height;
 	stream << "[";
 	if (out_to_be_put.height > 0) stream << out_to_be_put.readAt(0);
-	if (out_to_be_put.height > 1) 
-		for (int i=1; i< out_to_be_put.height; ++i)	
+	if (out_to_be_put.height > 1)
+		for (int i=1; i< out_to_be_put.height; ++i)
 			stream << "; " << out_to_be_put.readAt(i);
-	
+
 	stream << "]";
 	return stream;
 }
 
 /*
 	visualise a tableau:
-	
+
 	for (int i=0; i<out_to_be_put.size(); ++i) {
 		for (int j=0; j< out_to_be_put[i]; ++j)
 			stream << "O";

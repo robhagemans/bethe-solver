@@ -30,11 +30,11 @@ public:
 	Square (const Square& a, const Square& b); 	// initialize to tensor product of a and b
 	Square (const Square& a, int row_id, int col_id); // init by cutting row row_id and col col_id
 	~Square();
-	
+
 	inline number* operator[] (const int i) { return M[i]; };  		// subscripting: pointer to row i
 	inline const number* operator[] (const int i) const { return M[i]; };
 	inline int size() const { return dim; };
-	
+
 	Square& operator= (const Square& rhs);  		// assignment
 	Square& operator= (const number& a);        		// assign 1 to diagonal elements (NOT like in NR !!!)
 	Square& operator+= (const number& a);

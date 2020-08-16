@@ -46,7 +46,7 @@ extern const char* exc_InvalidIndex;
 class AddFunc {
 public:
 	inline AddFunc(void) {};
-	// do/record a calculation 
+	// do/record a calculation
 	virtual inline void operator() (Quantity& quantity) {};
 	// the log
 	virtual inline ostream& log(void) { return CNULL; };
@@ -63,15 +63,15 @@ public:
 	// log an exception w/respect to a state
  	virtual inline void log (const State* const p_state, const Exception exc) {};
 };
-	
-	
-// only log 
-class OnlyLog: public AddFunc {	
+
+
+// only log
+class OnlyLog: public AddFunc {
 protected:
 	ostream& its_logstream;
 	ostream& its_progstream;
-public:	
-	// don't log 
+public:
+	// don't log
 	inline OnlyLog (void): its_logstream(CNULL), its_progstream(CNULL) {};
 	// write everything to one stream
 	inline OnlyLog (ostream& logstream): its_logstream(logstream), its_progstream(logstream) {};
@@ -113,7 +113,7 @@ class AddToFile : public OnlyLog {
 public:
 	const static int output_precision;
 protected:
-	ostream& its_outfile; 
+	ostream& its_outfile;
 public:
 	// don't log, just output
 	AddToFile(void) : OnlyLog(), its_outfile(cout) { } ;
@@ -121,25 +121,25 @@ public:
 	AddToFile(ostream& outfile, ostream& logstream) : OnlyLog(logstream), its_outfile(outfile) { its_outfile.precision(output_precision);  };
 	// use a separate log and progress stream
 	AddToFile(ostream& outfile, ostream& logstream, ostream& progress) : OnlyLog(logstream, progress), its_outfile(outfile) { its_outfile.precision(output_precision);  };
-	
-	virtual inline void operator() (Quantity& quantity)	{ 
+
+	virtual inline void operator() (Quantity& quantity)	{
 		State* p_state = quantity.pRightState();
 		its_outfile << name(p_state->p_base) <<SEP<< p_state->id() <<SEP
 			<< quantity.mode() <<SEP<< quantity.momentum() <<SEP<< quantity.energy() <<SEP<< quantity.formFactor()  <<SEP
-			<< p_state->convergence <<SEP<< p_state->stringDeviation() <<SEP<< p_state->devianceMagnitude() <<SEP<< p_state->iterations <<SEP<< p_state->newton_iterations  <<endl; 
+			<< p_state->convergence <<SEP<< p_state->stringDeviation() <<SEP<< p_state->devianceMagnitude() <<SEP<< p_state->iterations <<SEP<< p_state->newton_iterations  <<endl;
 	};
 };
 
 
 // read from a form factor (S?ff) file
 inline istream& readFormFactor (
-	istream& infile, 
-	long long int& id, int& index_momentum, REAL& momentum, REAL& energy, REAL& form_factor, 
-	REAL& convergence, int& iterations, int& newt_iter, REAL& deviation) 
+	istream& infile,
+	long long int& id, int& index_momentum, REAL& momentum, REAL& energy, REAL& form_factor,
+	REAL& convergence, int& iterations, int& newt_iter, REAL& deviation)
 	// read the base string into id (this will fail, but it's a dummy)
-{	
+{
 	string dummy; REAL dummy_deviance_magnitude;
-	return infile >> dummy >> id >>index_momentum >>momentum >>energy >>form_factor >>convergence >>deviation >> dummy_deviance_magnitude >>iterations >>newt_iter; 
+	return infile >> dummy >> id >>index_momentum >>momentum >>energy >>form_factor >>convergence >>deviation >> dummy_deviance_magnitude >>iterations >>newt_iter;
 }
 
 
@@ -165,9 +165,9 @@ struct ScanResult {
 
 /** 'scan' one state **/
 bool scanState(
-	AddFunc& addfunc, 
-	Quantity& quantity, 
-	State* const p_state, 
+	AddFunc& addfunc,
+	Quantity& quantity,
+	State* const p_state,
 	const REAL deviation_threshold,
 	ScanResult& scan_result);
 
@@ -177,7 +177,7 @@ bool scanState(
 REAL scanBase (
 	AddFunc& addFunc,
 	Quantity& quantity,
-	Base* p_base, 
+	Base* p_base,
 	const REAL deviation_threshold = DEFAULT_DEVIATION_THRESHOLD,
 	long long int id_start=NO_ID, long long int id_stop=NO_ID
 );
