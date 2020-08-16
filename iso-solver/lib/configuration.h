@@ -19,7 +19,7 @@ public:
 	virtual int numberStringsOfType(const int type) const = 0;
 	// number of string types in configuration
 	virtual int numberTypes() const = 0;
-	// total number of roots 
+	// total number of roots
 	virtual int numberRoots() const = 0;
 
 };
@@ -34,10 +34,10 @@ protected:
 public:
 	// default costructor: trivial configuration
 	IsoConfiguration(const int number_magnons=0);
-	// construct from given vector/array of number of strings for each string type 
+	// construct from given vector/array of number of strings for each string type
 	IsoConfiguration(const vector<int>& base_vec);
 	IsoConfiguration(const int* base_array, const int array_length);
-	~IsoConfiguration() {};	
+	~IsoConfiguration() {};
 
     // add strings to an existing configuration. add negative numbers to remove strings.
     IsoConfiguration& add(const int string_type, const int number_strings_to_add);
@@ -48,13 +48,13 @@ public:
 	int numberStringsOfType(const int type) const;
 	// number of string types in configuration
 	int numberTypes() const;
-	// total number of roots 
+	// total number of roots
 	int numberRoots() const;
 
 	// length of string of type number
 	int stringLength(const int type) const;
 	vector<int> stringLengths() const;
-	
+
 };
 
 
