@@ -1,0 +1,70 @@
+N M: base: 
+ base=(1)  2I=(+0)  2J=(+0 )
+ conv 0
+ iter 0
+ roots (0,0) (-0,0)
+ dirty (0,0) (0,0)
+
+ base=(1)  2I=(+2)  2J=(+2 )
+ conv 0
+ iter 3
+ roots (0.133975,0)
+ dirty (1,0)
+
+ base=(1)  2I=(-2)  2J=(-2 )
+ conv 0
+ iter 3
+ roots (-0.133975,0)
+ dirty (-1,0)
+
+ base=(1)  2I=(+4)  2J=(+4 )
+ conv 0
+ iter 3
+ roots (0.288675,0)
+ dirty (2,0)
+
+ base=(1)  2I=(-4)  2J=(-4 )
+ conv 0
+ iter 3
+ roots (-0.288675,0)
+ dirty (-2,0)
+
+ base=(1)  2I=(+6)  2J=(+6 )
+ conv 9.99999e-21
+ iter 2
+ roots (0.5,0)
+ dirty (3,0)
+
+ base=(1)  2I=(-6)  2J=(-6 )
+ conv 0
+ iter 3
+ roots (-0.5,0)
+ dirty (-3,0)
+
+ base=(1)  2I=(+8)  2J=(+8 )
+ conv 0
+ iter 3
+ roots (0.866025,0)
+ dirty (4,0)
+
+ base=(1)  2I=(-8)  2J=(-8 )
+ conv 0
+ iter 3
+ roots (-0.866025,0)
+ dirty (-4,0)
+
+ base=(1)  2I=(+10)  2J=(+10 )
+ conv 0
+ iter 3
+ roots (1.86603,0)
+ dirty (5,0)
+
+ base=(1)  2I=(-10)  2J=(-10 )
+ conv 9.99996e-21
+ iter 2
+ roots (-1.86603,0)
+ dirty (-5,0)
+11 states scanned
+0 not converged: 
+11 states scanned
+0 not converged: 
