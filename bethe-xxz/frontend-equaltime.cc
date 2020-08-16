@@ -12,9 +12,9 @@ int run(void)
 	cerr<<" function_index  delta  number_sites  left_number_down "<<endl;
 	cin >> function_index >> delta >> number_sites >> left_number_down;
 	cerr<< "input complete"<<endl;
-	
-	
-	
+
+
+
 	makeEqualTimeCorrelatorFile (function_index, delta, number_sites, left_number_down);
 
 	return 0;

@@ -3,16 +3,16 @@
 
 #include <vector>
 #include <iostream>
-#include "exception.h" 
+#include "exception.h"
 
 extern const char* exc_Overflow;    // factorial(), choose()
 extern const char* exc_InvalidID ;  // young()
 extern const char* exc_IndexRange;  // young()
 
 // factorial
-long long int factorial (int n);				
+long long int factorial (int n);
 // binomial coefficient
-long long int choose (int upper, int lower);	
+long long int choose (int upper, int lower);
 
 
 /** Young tableaux **/
@@ -35,7 +35,7 @@ public:
 	Young& operator= (const Young& rhs);
 	// destroy
 	~Young (void) { };
-		
+
 	// element access: width of a row
 	// NOTE: got rid of all overloaded operators here because they seem to confuse the compiler and crash the program.
 	// NOTE: this was because it inherited public vector int, I guess...
@@ -43,12 +43,12 @@ public:
 	int& Young::writeAt (const int index);
 // 	inline int Young::at (const int index) const
 // 	{ return read(index); };
-// 	inline int Young::operator[] (const int index) const 
+// 	inline int Young::operator[] (const int index) const
 // 	{ 	return read(index); };
-// 	inline int& Young::operator[] (const int index) 
+// 	inline int& Young::operator[] (const int index)
 // 	{ 	return at(index); }
-	
-	
+
+
 	// number of tableaux of this width, height
 	inline long long int limId(void) const { return choose (width+height, width); };
 	// set id and sizes

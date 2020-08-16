@@ -37,7 +37,7 @@ int main(void)
 	cin >> function_index >> delta >> number_sites >> left_number_down;
 	cin >> max_time >> number_time >> offset;
 	cerr<< "input complete"<<endl;
-	
-	makeNeighbourCorrelatorFile (function_index, delta, number_sites, left_number_down, max_time, number_time, offset, 
+
+	makeNeighbourCorrelatorFile (function_index, delta, number_sites, left_number_down, max_time, number_time, offset,
 		pow(10.0, -deviation_threshold_power));
 }
