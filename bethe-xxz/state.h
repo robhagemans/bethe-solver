@@ -14,7 +14,6 @@
 
 extern const char* exc_NotGroundBase;
 extern const char* exc_NegativeHoles;
-//extern const char* exc_Forbidden; //State::SetID
 extern const char* exc_Strings;
 extern const char* exc_NumberDown;
 extern const char* exc_Runaway;

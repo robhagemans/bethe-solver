@@ -114,20 +114,6 @@ public:
 	ScanIntervals* intervals;
 	BaseComparator (ScanIntervals* p_intervals) : intervals(p_intervals) {};
 	inline int operator() (const BaseData& a, const BaseData&  b) const  {
-/*
-		if (intervals->numberCalculated(a)) {
-			if (intervals->numberCalculated(b)) {
-				// both have been checked; sort by highest contribution
-				return intervals->averageContribution(a) > intervals->averageContribution(b);
-			}
-			// only a has been checked; a is preferred
-			else return true;
-		}
-		// only b has been checked; b is preferred
-		else if (intervals->numberCalculated(b)) return false;
-		// none have been checked; prefer lowest number of particles
-		else
-*/
 		return a.numberFreedoms() < b.numberFreedoms();
 	};
 };
