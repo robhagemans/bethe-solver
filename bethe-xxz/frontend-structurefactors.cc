@@ -103,7 +103,6 @@ int run(void)
 	int number_sites, left_number_down, number_energy, function_index, mode;
 	cout<<"quantity delta N M mode min_energy max_energy n_energy"<<endl;
 	cin >> function_index >> delta >> number_sites >> left_number_down;
-// 	cin >> mode;
 	cin >> min_en >> max_en >> number_energy;
 	cerr<< "input complete"<<endl;
 

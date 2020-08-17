@@ -129,7 +129,6 @@ int run(void)
 		if (!p_florida->admissible()) cout<<"INADMISSIBLE STATE " <<endl;
 		cout <<"recomputed id: " << p_florida->id()<<endl;
 
-		//p_florida->solveBetheEquationInterpolateNewton (5000, iterations=0, 100, newtiter=0, 1e-28);
 		Stopwatch stopwatch;
 		if (!p_florida->solve (DEFAULT_POLICY)) cout<<"NOT CONVERGED "<<endl;
 		cout << "converged to " << p_florida->convergence << " after " << p_florida->iterations <<" iterations and "<< p_florida->newton_iterations<<" newton steps."<<endl;
@@ -146,10 +145,7 @@ int run(void)
 
 
 		cout<<endl;
-		//cout << "weight: "<< p_florida->weight() <<endl;
 		cout << "deviation: " << p_florida->stringDeviation() <<endl<<endl;
 		cout << "total time "<<stopwatch.humanReadable()<<endl;
 		cout<<endl;
 }
-
-

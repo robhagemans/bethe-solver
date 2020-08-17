@@ -9,108 +9,6 @@
 
 #ifndef STALINIST_RANGE_CHECK
 
-/*
-
-//these lead to incomprehensible errors (currently, badalloc)
-// hmm, that might be due to bad linking because of makefile error....
-
-
-template<class number>
-Strip<number>::Strip (Base* new_p_base, const number initial_value)
-{
-	dimension = new_p_base->numberTypes();
-
-	contents = new number*[dimension+1];
-	int number_elements = 0;
-	for (int j = 0; j < dimension; ++j) number_elements += new_p_base->numberStringsOfType(j);
-
-	contents[0] = new number[number_elements];
-
-	for (int i = 1; i <= dimension; ++i) contents[i] = contents[i-1] + new_p_base->numberStringsOfType(i-1);
-	// look out! the last pointer points one past the allocated space.
-	// useful to get size info. maybe implement this differently.
-
-	// zero out.
-	for (int i = 0; i < number_elements; ++i) *(contents[0] + i) = initial_value;
-}
-
-
-// copy constructor
-template<class number>
-Strip<number>::Strip (const Strip& original): dimension(original.numberTypes())
-{
-	/// NOTE: watch this constructor! It's caused memory corruption before
-	/// DO NOT use contents(new number* [dimension+1]) it the initialiser, it corrupts memory (or at least I think it's the cause...)
-
-	contents= new number* [dimension+1];
-
-	contents[0] = new number[original.numberElements()];
-	// copy elements.
-	for (int i = 0; i < original.numberElements(); ++i) *(contents[0] + i) = *(original.contents[0] + i);
-	// 'copy' pointer table, but with pointers to the new array
-	for (int i = 1; i <= dimension; ++i) contents[i] = contents[0] + (original.contents[i] - original.contents[0]);
-}
-
-// assignment
-template<class number>
-Strip<number>& Strip<number>::operator= (const Strip<number>& original)
-{
-	if (this != &original) {
-		if (numberElements() != 	original.numberElements()) throw "bad assignment (#)";
-		if (dimension != 	original.numberTypes()) throw "bad assignment (dimension)";
-		// copy elements
-		for (int i = 0; i < original.numberElements(); ++i) *(contents[0] + i) = *(original.contents[0] + i);
-		// 'copy' pointer table, but with pointers to the new array
-		/// don't do this for an assignment! the structures must be equal anyway...
-// 		for (int i = 1; i <= dimension; ++i) contents[i] = contents[0] + (original[i] - original[0]);
-	}
-}
-
-
-
-// destructor
-template<class number>
-Strip<number>::~Strip()
-{
-	if (numberElements()) delete[] contents[0];
-	delete[] contents;
-}
-
-
-// template<class number>
-// vector<int> Strip<number>::structure(void) const
-// {
-// 	vector<int> result_structure (dimension);
-// 	for (int i = 0; i < dimension; ++i) result_structure[i] = (contents[i+1] - contents[i]);
-// 	return result_structure;
-// }
-
-
-
-// outputting a Strip
-template<class number>
-ostream& operator<< (ostream& stream, const Strip<number>& out_to_be_put) {
-
-	//stream << "(";
-	if (out_to_be_put.numberTypes() > 0)
-		for (int i=0; i< out_to_be_put.numberTypes(); ++i) {
-			for (int j=0; j < out_to_be_put.numberElementsOfType(i); ++j)
-				stream << out_to_be_put[i][j] << SEP;//", ";
-			stream << ";" << SEP;//";  ";
-		}
-	//stream << ")";
-
-	return stream;
-}
-
-// sorting a strip
-template<class number, class Compare>
-void sort(Strip<number>& strip_to_sort, Compare compare)
-{
-	for (int i=0; i<strip_to_sort.numberTypes(); ++i) sort (strip_to_sort.contents[i], strip_to_sort.contents[i+1], compare);
-}
-
-*/
 
 
 
@@ -124,7 +22,6 @@ Strip<number>::Strip (const Base* const new_p_base, const number initial_value)
 	for (int j=0; j< number_types; ++j) {
 		number_elements += p_base->numberStringsOfType(j);
 	}
-// 	elements.resize(number_elements);
 	elements = new number[number_elements];
 	index_table = new int[new_p_base->numberTypes()+1];
 	index_table[0]=0;
@@ -209,61 +106,6 @@ void sort(Strip<number>& strip_to_sort, Compare compare)
 /* FullStrip
  */
 
-/*
-template<class number>
-FullStrip<number>::FullStrip (Base* new_p_base, const number initial_value) : p_base(new_p_base), dimension(new_p_base->numberTypes())
-{
-	// reserve space for the pointer table
-	contents = new number*[dimension+1];
-
-	int number_elements = 0;
-	for (int j=0; j< dimension; ++j) {
-		number_elements += p_base->numberStringsOfType(j) * p_base->chain.stringLength(j);
-	}
-	// reserve space for the elements
-	contents[0] = new number[number_elements];
-
-	// look out! the last pointer points one past the allocated space. // useful to get size info.
-	for (int i = 1; i <= dimension; ++i) contents[i] = contents[i-1] + p_base->numberStringsOfType(i-1);
-
-	// zero out.
-	for (int i = 0; i < number_elements; ++i) *(contents[0] + i) = initial_value;
-}
-
-
-// copy constructor
-template<class number>
-FullStrip<number>::FullStrip (const FullStrip& original): p_base(original.p_base), dimension(original.numberTypes())
-{
-	contents= new number* [dimension+1];
-	contents[0] = new number[original.numberElements()];
-	// copy elements.
-	for (int i = 0; i < original.numberElements(); ++i) *(contents[0] + i) = *(original[0] + i);
-	// 'copy' pointer table, but with pointers to the new array
-	for (int i = 1; i <= dimension; ++i) contents[i] = contents[0] + (original[i] - original[0]);
-}
-
-// assignment
-template<class number>
-FullStrip<number>& FullStrip<number>::operator= (const FullStrip<number>& original)
-{
-	if (this != &original) {
-		// copy elements
-		for (int i = 0; i < original.numberElements(); ++i) {
-			*(contents[0] + i) = *(original.contents[0] + i);
-		}
-	}
-}
-
-// destructor
-template<class number>
-FullStrip<number>::~FullStrip()
-{
-	if (numberElements()) delete[] contents[0];
-	delete[] contents;
-}
-
-*/
 
 
 template<class number>

@@ -14,7 +14,6 @@ class Chain {
 		int number_sites;
 		int number_types;
 	public:
-// 	protected:
 		int* string_length;
 		int* string_parity;
 	public:

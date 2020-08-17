@@ -3,7 +3,6 @@
 
 #include "base.h"
 
-//namespace Gapless {
 
 	class XXZ_Base: public Base {
 	public:
@@ -25,6 +24,5 @@
 		// ceil(2*I_max)   limit == maximum +1
 		virtual vector<int> limQuantumNumbers (void) const;
 	};
-//}
 
 #endif

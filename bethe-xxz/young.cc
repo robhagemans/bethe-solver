@@ -2,7 +2,6 @@
 
 const char* exc_Overflow = "overflow"; // factorial(), choose()
 const char* exc_InvalidID = "invalid id"; //young()
-//const char* exc_IndexRange = "index out of range"; //young() // defined in matrix.h
 
 
 
@@ -223,14 +222,5 @@ ostream& operator<< (ostream& stream, Young out_to_be_put) {
 	return stream;
 }
 
-/*
-	visualise a tableau:
-
-	for (int i=0; i<out_to_be_put.size(); ++i) {
-		for (int j=0; j< out_to_be_put[i]; ++j)
-			stream << "O";
-		stream<<endl;
-	}
-*/
 
 const vector<Young> NO_SHIFTS (0);

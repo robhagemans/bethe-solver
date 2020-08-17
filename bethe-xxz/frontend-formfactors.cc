@@ -68,7 +68,6 @@ int run(void)
 	vector< Base* > all_bases = allNewBases(p_chain, p_quantity->rightNumberDown(), /* max_string_length= */ 20, /* max_number_particles= */ 20, /*max_number_spinons= */ 20, p_quantity->maxInfinite());
 
 	Stopwatch calculation_time;
-// 	ScanIntervals interval;
 	Matrix<REAL> basket (number_energy, number_sites);
 	AddToMatrixFunc bin_this (basket, max_energy);
 	AddToFileFunc dump_screen (cout, cerr);

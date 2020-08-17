@@ -52,7 +52,6 @@ bool NEWscanState(
 				else {
 					delete p_right_state;
 					return false;
-// 					cerr<<"deviance not converged."<<endl;
 				}
 			}
 		}
@@ -153,22 +152,7 @@ int run(void)
 {
 	int number_sites_max, number_sites_min;
 	int number_down_left, number_down_diff;
-
-/*
-struct Policy {
-	int max_iterations;			// maximum iterations
-	int max_newton;				// maximum Newton's method steps
-	REAL precision;				// required precision for convergence
-	REAL newton_threshold;		// precision to extrapolate to before newton's method is invoked
-	REAL newton_factor;			// factor with which to increase newton threshold if newton doesn't work
-	REAL newton_bandwidth;		// factor of worsening we allow from newton's method before stopping it
-	int newton_consecutive;		// number of consecutive newton steps allowed
-	int extrapolate_consecutive;// number of consecutive iterations/extrapolations allowed
-};
-*/
 	Policy policy = {2000, 1, 1.5* 1e-24, 1e-2, 1e-2, 10.0, 7, 20};
-
-// 	REAL precision = 1.5* 1e-24;
 
 	cerr<<"N_min   N_max  N-M "<<endl;
 	cin >> number_sites_min >>  number_sites_max >> number_down_diff;
@@ -183,8 +167,6 @@ struct Policy {
 	{
 		number_down_left = number_sites/2 - number_down_diff;
 		policy.precision = 1.5*1e-24*number_down_left;
-// 		policy.precision = precision*REAL(number_sites);
-cerr<<number_sites<<SEP<<policy.precision<<SEP;
 		Chain* p_chain = newChain (1.0, number_sites, /* cutoff_types = */ 8);
 		Base* p_ground_base = newGroundBase (p_chain, number_down_left);
 		State* p_ground_state = newGroundState (p_ground_base);
@@ -217,5 +199,4 @@ cerr<<number_sites<<SEP<<policy.precision<<SEP;
 		outfile<<endl;
 	}
 	outfile.close();
-cerr<<endl<<endl;
 }

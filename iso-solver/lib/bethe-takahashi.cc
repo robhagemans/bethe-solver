@@ -266,30 +266,6 @@ cerr<<rapidity<<endl;
 	/* calculate the quantum numbers (J) as they are in the complex (non-Takahashi) Bethe equations, from the solution */
 	vector< complex<double> > IsoBetheTakahashiSolver::dirtyQuantumJ (void) const
 	{
-/*
-		// currently, we ignore infinite rapidities
-		vector< complex<double> > bethe_roots = roots();
-		vector< complex<double> > bethe_i (config_.numberRoots());
-		for (int alpha=0; alpha < config_.numberRoots(); ++alpha) {
-			if (abs(real(bethe_roots[alpha])) < threshold_quantum_number && abs(abs(imag(bethe_roots[alpha]))-0.5)< threshold_quantum_number ) {
-				// numberRoots is number of finite roots. if even, there is no zero; if odd, there is a zero.
-				int root_sign = isgn(imag(bethe_roots[alpha]));
-				if (config_.numberRoots()%2)
-					// odd. there's a zero q.n.
-					bethe_i[alpha] = 0.25*(chain_length_ - root_sign*(chain_length_%4));
-				else
-					// even. no zero.
-					bethe_i[alpha] = 0.25*(chain_length_ - root_sign*(2 - chain_length_%4));
-				continue;
-			}
-			complex<double> lhs = atan(2.0*bethe_roots[alpha]) * double(chain_length_);
-			for (int beta=0; beta<config_.numberRoots(); ++beta){
-				if (alpha!=beta) lhs -= atan(bethe_roots[alpha] - bethe_roots[beta]);
-			}
-			bethe_i[alpha] = lhs/PI;
-		}
-		return bethe_i;
-*/
         return dirtyQuantumJforRoots(chain_length_, roots());
 	}
 
@@ -638,17 +614,14 @@ bool IsoBetheTakahashiSolver::solve ()
 			    // didn't work.
 				// must be decomposeLU: singular matrix.
 				// newton can't be used, see if iterating once helps
-//				its_lnnorm = NOT_CALCULATED;
 				iterateBT ();
 			}
 
 			if (convergence<=precision) break;
-//			else its_lnnorm = NOT_CALCULATED;
 		}
 		if (convergence<=precision) break;
 
 		// if we're here, newton failed for now.
-//		its_lnnorm = NOT_CALCULATED;
 
 		if (newton_iterations >= max_newton) {
 			// we have reached the max. no other choice but to try interpolation
@@ -668,6 +641,3 @@ bool IsoBetheTakahashiSolver::solve ()
 	}
 	return (convergence <= precision);
 }
-
-
-

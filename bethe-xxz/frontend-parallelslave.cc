@@ -35,7 +35,6 @@ int run(void)
 	string command_line = Command_Line.str();
 	/// PVMSlaveReadArguments or some such?
 	Command_Line >> start_hole >> stop_hole;
-	///arguments<<*p_state<<SEP<<quantity;
 	Command_Line >> chain_name >> base_name >> id >> quantity_name >> left_base_name >> left_id;
 cerr<<id<<endl;
 	PVMSendFunc pvm_send_func;
@@ -66,5 +65,3 @@ cerr<<id<<endl;
 	}
 
 }
-
-

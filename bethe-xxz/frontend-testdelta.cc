@@ -117,7 +117,6 @@ int run(void)
 		cout<< "momentum: " << p_oregon->momentum() <<endl;
 		cout<< "energy: " << p_oregon->energy()<<endl;
 		cout<< "norm: "<< p_oregon->norm() << endl;
-		//cout<< "weight: "<< p_oregon->weight() <<endl;
 		cout<< "deviation: " << p_oregon->stringDeviation() <<endl<<endl;
 		cout<<endl;
 
@@ -129,9 +128,7 @@ int run(void)
 		if (!p_florida->admissible()) cout<<"INADMISSIBLE STATE " <<endl;
 		cout <<"recomputed id: " << p_florida->id()<<endl;
 
-		//p_florida->solveBetheEquationInterpolateNewton (5000, iterations=0, 100, newtiter=0, 1e-28);
 		Stopwatch stopwatch;
-		//stopwatch.start();
 		if (!p_florida->solve (DEFAULT_POLICY)) cout<<"NOT CONVERGED "<<endl;
 		cout << "converged to " << p_florida->convergence << " after " << p_florida->iterations <<" iterations and "<< p_florida->newton_iterations<<" newton steps."<<endl;
 		cout << "iteration time "<<stopwatch.lapHumanReadable()<<endl;
@@ -149,7 +146,6 @@ int run(void)
 		cout << "determinant time "<<stopwatch.lapHumanReadable()<<endl;
 
 		cout<<endl;
-		//cout << "weight: "<< p_florida->weight() <<endl;
 		cout << "deviation: " << p_florida->stringDeviation() <<endl<<endl;
 		cout << "total time "<<stopwatch.humanReadable()<<endl;
 		cout<<endl;
@@ -162,13 +158,6 @@ int run(void)
 
 		// copy into a deviated state
 		XXXDeviatedState deviated_state ( *((XXX_State*) p_florida) );
-		/*
-		// check if iterate keeps our solution invariant for d=0
-		for (int i=0; i<10; ++i) {
-			deviated_state.iterate();
-			cerr<<deviated_state.rapidity<<endl;
-		}
-		*/
 		deviated_state.solve(DEFAULT_POLICY);
 
 		cerr<<deviated_state.rapidity[1][0]<<SEP<<deviated_state.convergence<<SEP<<deviated_state.iterations<<endl;
@@ -198,20 +187,4 @@ int run(void)
 
 		cerr<<deg_state.rapidity[1][0]<<SEP<<deg_state.convergence<<SEP<<deg_state.iterations<<endl;
 		cerr<<deg_state.deviance<<endl;
-
-
-		/*
-		if (p_quantity->name()==Transverse::ff_name) cout << "<  "<<state_id<<" | S- | GS >^2 = ";
-		else 	cout << "< "<<state_id<<" | Sz | GS >^2 = ";
-		cout<< p_quantity->converse(deviated_state) <<endl;
-		*/
-
-		// see what happens to deviance on iteration
-/*		for (int i=0; i<10; ++i) {
-			deviated_state.iterateDevianceDev(false);
-			cerr<<deviated_state.deviance<<endl;
-		}
-*/
 }
-
-

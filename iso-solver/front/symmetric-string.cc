@@ -277,24 +277,6 @@ double SymString::stepRapidity (const vector<SymRoots*>& all, const int alpha)
         }
 	}
 
-/*
-    const int a_mid = (string_length_-1)/2;
-    double sum_kin = 0.0;
-
-	// term for even strings
-	if (0==string_length_%2)   sum_kin += xi_CAUTION( lambda_, -delta_[a_mid] );
-
-    for (int a=0; a< a_mid; ++a) {
-		sum_kin += 	  xi_CAUTION( lambda_ + epsilon_[a+1], 0.5*string_length_ - (a+1) + delta_[a+1]  )
-					+ xi_CAUTION( lambda_ + epsilon_[a],  -0.5*string_length_ + (a+1) - delta_[a]  );
-	}
-
-
-	// 2\pi \sum_{a=1}^n J_a + \theta\sub{other}^a = \sum_{a=1}^n \theta\sub{kin}^a
-    // absorbed opposite root in N-1 for faster convergence
-    const double phase_x2 = -sum_kin_x2.val() + (PI*sum_jx2_ + scatter.val()) / (big_n_-1.);
-    return -epsilon_[0] + ( 0.5*string_length_ + delta_[0] )*tan( 0.5*phase_x2 ) ;
-*/
 
     HPIVal sum_kin_x2 = { 0, 0. };
     for (int a=0; a < string_length_; ++a) {
@@ -317,7 +299,6 @@ double SymString::stepRapidity (const vector<SymRoots*>& all, const int alpha)
 IterResult SymString::iterate(const vector<SymRoots*>& all, const int alpha, double& convergence)
 {
 
-//cerr<<lambda_<<" "<<epsilon_<<delta_<<endl;
 
 	new_lambda_ = stepRapidity(all, alpha);
 	if (!finite(new_lambda_))
@@ -331,7 +312,6 @@ IterResult SymString::iterate(const vector<SymRoots*>& all, const int alpha, dou
 	        new_delta_[a] = dampedStep(delta_[a], new_delta_[a], damping_delta_);
     }
 
-//cerr<<new_lambda_<<" "<<new_epsilon_<<new_delta_<<endl;
     if (n_on_axis_) {
         // reconcile lambda and epsilon
         new_lambda_ = 0.5*(new_lambda_-new_epsilon_[n_on_axis_-1]);
@@ -423,5 +403,3 @@ IterResult SymString::initiate(const vector<SymRoots*>& all, const int alpha)
 
     return IterResult::iter_ok;
 }
-
-

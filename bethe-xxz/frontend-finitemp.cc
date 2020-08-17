@@ -35,7 +35,6 @@ int run(void)
 
 		/** find lowest states in this subspace **/
 		vector<int> base_vec (1, number_down_left); // simplest base, only real roots.
-		/** watskeburt met de infinite_raps? **/
 
 		vector< State* > lowest_states;
 		// 1 or 2 holes must have lowest states.
@@ -124,5 +123,3 @@ for (int i=0; i< lowest_states.size(); ++i)
 
 	}
 }
-
-

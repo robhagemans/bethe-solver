@@ -84,8 +84,6 @@ int run(void)
 		cout<< "  max number spinons >> ";
 		cin>> number_spinons;
 
-//	cout<<"  boundary size >> ";
-//	cin >> boundary;
 boundary=0;
 
 		Chain* p_chain = newChain (delta, chain_length, 4);
@@ -108,9 +106,7 @@ boundary=0;
 		Stopwatch stopwatch;
 		for (int i=0; i<all_bases.size(); ++i) {
 			total_ids += all_bases[i]->limId().back()-1;
-			//AcceptBoundaryHolesFunc acceptBoundaryHoles (all_bases[i]->numberSpinons() - number_spinons, int(ceil(0.25*(all_bases[i]->numberSpinons() - number_spinons))));
 			REAL contrib = makeFormFactorFile (*p_quantity, p_chain, all_bases[i], left_number_down, DEFAULT_POLICY, 0,0, acceptAlways ); //acceptBoundaryHoles && acceptHalfBrillouin
-			//REAL contrib = makeFormFactorFile (quantity, p_chain, all_bases[i], left_number_down);
 			sum += contrib;
 			double lap = stopwatch.lapUse();
 			cout<< "cpl "<< contrib/lap <<" lap "<<lap<<" time "<<stopwatch.getUse()<<SEP<<SEP;

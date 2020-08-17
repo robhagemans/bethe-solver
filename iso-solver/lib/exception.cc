@@ -1,15 +1,5 @@
 #include "exception.h"
 
-/*
-Exception::Exception()
-	: where_("somewhere"), what_("something"), why_("go figure")
-{ 	}
-
-
-Exception::Exception(string message)
-	: where_(""), what_(message), why_("")
-{ 	}
-*/
 
 Exception::Exception(string here, string message)
 	: where_(here), what_(message), why_("")
@@ -37,13 +27,13 @@ string Exception::where() const
 
 
 
-ostream& operator<< (ostream& stream, const std::exception& out_to_be_put) 
+ostream& operator<< (ostream& stream, const std::exception& out_to_be_put)
 {
 	stream<< out_to_be_put.what();
 	return stream;
 }
 
-ostream& operator<< (ostream& stream, const Exception& out_to_be_put) 
+ostream& operator<< (ostream& stream, const Exception& out_to_be_put)
 {
 	stream<< out_to_be_put.where() <<": "<<out_to_be_put.what()<<"; "<<out_to_be_put.why();
 	return stream;

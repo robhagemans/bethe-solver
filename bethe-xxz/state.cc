@@ -136,25 +136,6 @@ void setGroundQuantumNumbers(const Base* p_base, Strip<int>& quantum_number)
 
 
 
-/** assignment **/
-/*
-::State& ::State::operator= (const State& rhs)
-{
-	if (this != &rhs) {
-		chain = rhs.chain;
-		base = rhs.base; //this is problematic with references...
-		quantum_number = rhs.quantum_number;
-		rapidity = rhs.rapidity;
-		convergence = rhs.convergence;
-		its_lnnorm = rhs.its_lnnorm;
-		its_energy= rhs.its_energy;
-		iterations = rhs.iterations;
-		newton_iterations = rhs.newton_iterations;
-		its_shifts = rhs.its_shifts;
-	}
-	return *this;
-}
-*/
 
 
 /** set quantum numbers from shifts **/
@@ -552,19 +533,6 @@ int ::State::calculateMode (void) const
 bool State::calculateSymmetry(void) const
 {
 	// let's see if the distribution of quantum numbers is symmetric.
-	/*
-	// this should work for unordered quantum numbers
-	for (int j=0; j < base.numberTypes(); ++j) {
-		int sum_quantum_numbers = 0, sum_cube_quantum_numbers = 0;
-		for (int alpha=0; alpha < base.numberStringsOfType(j); ++alpha) {
-			sum_quantum_numbers += quantum_number(j, alpha);
-			sum_cube_quantum_numbers += quantum_number(j, alpha)*quantum_number(j, alpha)*quantum_number(j, alpha);
-		}
-		if (sum_quantum_numbers || sum_cube_quantum_numbers) return false;
-	}
-	return true;
-	*/
-
 	// faster: assume ordering 0 -1 1 -2 2 etc which we enforce anyway
 	for (int j=0; j < p_base->numberTypes(); ++j) {
 		int number_j = p_base->numberStringsOfType(j);
@@ -577,4 +545,3 @@ bool State::calculateSymmetry(void) const
 	}
 	return true;
 }
-

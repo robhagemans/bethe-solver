@@ -48,20 +48,9 @@
 	vector<int> Gap_Base::limQuantumNumbers (void) const
 	{
 		vector<int> lim_quantum(numberTypes());
-	/*
-		for (int j=0; j < numberTypes(); ++j) {
-			int sum_theta = 0;
-			for (int k=0; k < numberTypes(); ++k)
-				sum_theta += (numberStringsOfType(k) - (j==k) ) * (1 + 2*(min(chain.stringLength(j), chain.stringLength(k))-1) + (j!=k) );
-			lim_quantum[j] = abs(chain.length() - sum_theta);
-			// include the quantum numbers on the boundary
-			// NOTE: this induces double counting; remove one of the boundary quantum numbers later!
-			++lim_quantum[j];
-		}
-	*/
+
 		// the very maximum of possibilities
 		// many states will have to be scrapped as doubly-counted.
 		for (int j=0; j < numberTypes(); ++j) lim_quantum[j] = p_chain->length()+1;
 		return lim_quantum;
 	}
-

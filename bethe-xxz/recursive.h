@@ -147,7 +147,6 @@ public:
 	Stopwatch calculation_time;
 	Stopwatch total_time;
 // running variables
-//protected:
 	int countdown;
 	Base* p_base;
 	State* p_state_start;
