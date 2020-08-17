@@ -6,7 +6,6 @@
 
 const char* exc_NotGroundBase = "not a ground base ";
 const char* exc_NegativeHoles = "negative number of holes";
-//const char* exc_Forbidden = "forbidden state"; //State::SetID
 const char* exc_Strings = "argument state must not have strings";
 const char* exc_NumberDown = "wrong number of down spins in argument state";
 const char* exc_Runaway = "runaway rapidity";
@@ -131,7 +130,6 @@ void setGroundQuantumNumbers(const Base* p_base, Strip<int>& quantum_number)
 		iterations(original.iterations), newton_iterations(original.newton_iterations),
 		its_shifts(original.its_shifts), its_id(original.its_id), its_mode(original.its_mode), its_symmetry(original.its_symmetry)
 { }
-
 
 
 

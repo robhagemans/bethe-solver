@@ -48,19 +48,6 @@ const char* exc_RapidityCollision = "rapidity collision";
 		setFreeRapidities();
 	}
 
-	/** assignment **/
-	/*
-	Gap_State& Gap_State::operator= (const Gap_State& rhs)
-	{
-		if (this != &rhs) {
-			State::operator= ( State(rhs) );
-			tfh_rapidity = rhs.tfh_rapidity;
-			ising_rapidity_over_pi = rhs.ising_rapidity_over_pi;
-			setTables();
-		}
-		return *this;
-	}
-	*/
 
 
 	/** set tables **/
