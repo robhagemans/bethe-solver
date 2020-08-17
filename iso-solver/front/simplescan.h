@@ -5,17 +5,6 @@
 #include "takahashi-string.h"
 
 
-/*
-inline bool noScan(const int big_n, const int big_m,
-        const std::vector< int>& base,
-        const std::vector< std::vector<int> >& ix2 )
-        { return true; };
-
-inline void noSum(const int big_n, const int big_m,
-        const std::vector< int>& base,
-        const int total_states, const int not_converged )
-        {};
-*/
 
 class SimpleScanner {
 public:
