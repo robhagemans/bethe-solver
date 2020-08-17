@@ -21,9 +21,9 @@ public:
 	long long int number_accepted;
 	// interval's total, not average, contribution (i.e. sum divided by max_sum);
 	REAL contribution;
-	Interval& Interval::operator+= (const Interval& plus);
-	Interval& Interval::operator-= (const Interval& minus);
-	Interval Interval::operator- (const Interval& minus) const;
+	Interval& operator+= (const Interval& plus);
+	Interval& operator-= (const Interval& minus);
+	Interval operator- (const Interval& minus) const;
 };
 
 extern const Interval NO_INTERVAL;
@@ -102,9 +102,9 @@ public:
 	void read (const string file_name);
 
 protected:
-	BaseRecord* ScanIntervals::recordForBase (const BaseData& base_data);
-	const BaseRecord* ScanIntervals::recordForBase (const BaseData& base_data) const;
-	BaseRecord* ScanIntervals::addBase (const BaseData& base_data);
+	BaseRecord* recordForBase (const BaseData& base_data);
+	const BaseRecord* recordForBase (const BaseData& base_data) const;
+	BaseRecord* addBase (const BaseData& base_data);
 };
 
 
