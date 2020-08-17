@@ -3,8 +3,6 @@
 const string exc_IncompatibleSizes = "incompatible matrix sizes";
 const string exc_SizeOne = "cannot chop a row and column from a size one matrix";
 
-//const char* exc_ZeroArray = "zero-sized array";
-//const char* exc_Singular = "singular matrix";
 
 // Returns the ln of absolute value or norm of determinant of matrix a, through LU decomposition
 //
@@ -42,8 +40,3 @@ double lndetDestroy (Square< complex<double> >& mat)
 
 	return log_det;
 }
-
-
-
-
-

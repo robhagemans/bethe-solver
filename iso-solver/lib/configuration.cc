@@ -79,34 +79,3 @@ inline int IsoConfiguration::numberRoots() const
 		number_roots += number_strings_[i]*stringLength(i);
 	return number_roots;
 }
-
-
-/*
-inline int IsoConfiguration::numberStringsOfLength(const int length) const
-{
-	return numberStringsOfType(length-1);
-}
-*/
-
-
-/*
-
-// add string of given length (length, not type!)
-inline bool IsoConfiguration::insertStringOfLength(const int length)
-{
-	if (length < 1) return false;
-	if (length > number_strings_.size()) number_strings_.resize(length);
-	++number_strings_[length-1];
-	return true;
-}
-
-// remove string of given length (length, not type!); false if no string present
-inline bool IsoConfiguration::deleteStringOfLength(const int length)
-{
-	if (length < 1) return false;
-	if (length > number_strings_.size()) return false;
-	if (number_strings_[length-1] <1) return false;
-	--number_strings_[length-1];
-	return true;
-}
-*/

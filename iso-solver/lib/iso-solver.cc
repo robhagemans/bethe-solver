@@ -615,13 +615,9 @@ cerr<<jx2<<endl;
 		// second indicator function
 		f_max = exRealIndicator2(jx2, x_max, y_max);
 
-//cout<<iter<<"  ";
-//cout<<x_min<<" "<<y_min<<" "<<f_min<<"   ";
-//cout<<x_max<<"  "<<y_max<<" "<<f_max<<endl;
 
 		if (++iter > max_iter) return false;
 	} while ( sgn(f_min) == sgn(f_max) );
-//cout<<endl;
 
 
 	double x_try, y_try, f_try;
@@ -652,15 +648,10 @@ cerr<<jx2<<endl;
 			y_max = y_try;
 			f_max = f_try;
 		}
-//cout<<iter<<"  ";
-//cout<<x_min<<" "<<y_min<<" "<<f_min<<"   ";
-//cout<<x_max<<"  "<<y_max<<" "<<f_max<<endl;
 
 		if (++iter > max_iter) return false;
 	}
 
-//cout<<indicator1(x_min, y_min)<<" "<< indicator2(x_min, y_min)<<endl;
-//cout<<indicator1(x_max, y_max)<<" "<< indicator2(x_max, y_max)<<endl;
 
 
 	// this turns a near pair into two real roots
@@ -712,7 +703,6 @@ double IsoSolver::exRealIndicator1(const int bethe_2xJ, const double eps, const 
 		// we ignore imag parts. they oughta cancel.
 		scattering_term += real( atan(lam - root(k, beta,b) ) );
 	}
-//cerr<<"scat1 "<<scattering_term<<endl;
 
 	return double(chain_length_) * atan(2.0*lam) - ( 0.5*PI*bethe_2xJ +  atan(-eps) + scattering_term );
 }
@@ -792,8 +782,6 @@ double IsoSolver::findRoot1(const int bethe_jx2, const double eps, const double 
 	bool IsoSolver::solveSingular(void)
 	{
 		// sanity check. now, this should be checked before calling; will be harmless&useful here once we store admissibility.
-// 		if (admissible()) return false;
-cerr<<"sing"<<endl;
 		Strip<double> new_rapidity (config_);
 		// find the singular pair and put it on hold. more than one: problem.
 		int number_singular=0, number_origin=0;
@@ -832,8 +820,6 @@ cerr<<"sing"<<endl;
 
 	bool IsoSolver::solveSymmetric(void)
 	{
-// 		if (!oddSymmetric()) return false;	//sanity check
-cerr<<" oddsym"<<endl;
 		int number_origin=0;
 		int odd_type[2];
 		for (int j=0; j<config_.numberTypes(); ++j) {
@@ -965,4 +951,3 @@ if (config_.stringLength(j) != 2) return 1;
 			magnitude += sq(deviance(j, alpha, a)) + sq(aberration(j, alpha, a));
 		return magnitude;
 	}
-

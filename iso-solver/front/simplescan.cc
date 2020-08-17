@@ -109,12 +109,6 @@ bool SimpleScanner::firstBase ()
 bool SimpleScanner::nextBase ()
 {
     vector<int> old_base = base_;
-    /*
-    int number_down = 0;
-    for (int j=0; j < base_.size(); ++j) {
-        number_down += base_[j]*length(j);
-    }
-    */
     int number_down = big_m_;
 
     for (int j=1; j < number_down; ++j) {
@@ -139,5 +133,3 @@ bool SimpleScanner::nextBase ()
     }
     return false;
 }
-
-
