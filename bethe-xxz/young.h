@@ -39,8 +39,8 @@ public:
 	// element access: width of a row
 	// NOTE: got rid of all overloaded operators here because they seem to confuse the compiler and crash the program.
 	// NOTE: this was because it inherited public vector int, I guess...
-	int Young::readAt (const int index) const;
-	int& Young::writeAt (const int index);
+	int readAt (const int index) const;
+	int& writeAt (const int index);
 
 
 	// number of tableaux of this width, height

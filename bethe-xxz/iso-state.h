@@ -65,7 +65,7 @@ extern const char* exc_NotXXX;
 		// bethe quantum numbers (2I) from takahashi quantum numbers, only for two-strings!
 		vector< int > calculateBetheQuantumNumbers(void) const;
 		// error in solution of (product) Bethe equation: accuracy check.
-		REAL XXX_State::betheError(void) const;
+		REAL betheError(void) const;
 
 	protected:
 		// set rapidities and related data fields

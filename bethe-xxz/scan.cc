@@ -128,6 +128,7 @@ REAL scanBase (
 	ScanResult scan_result;
 	// NO_ID: do not set id (and thus don't throw exceptions)
 	State* p_state = newState (p_base, NO_ID);
+
 	// loop over given interval of base
 	for (long long int id = start_id; id < stop_id; ++id) {
 		// set the id. may throw exceptions, which we don't catch as we can't resume anyway.

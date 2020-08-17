@@ -105,7 +105,7 @@ public:
 	// set single shifts
 	void setShift(const int sector, const Young& shift);
 	// set quantum numbers directly
-	void ::State::setQuantumNumbers (const Strip<int> the_quantum_numbers);
+	void setQuantumNumbers (const Strip<int> the_quantum_numbers);
 	// check admissiblity
 	virtual bool admissible(void) const;
 
