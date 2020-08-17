@@ -8,7 +8,6 @@ const char* exc_NumberTypes = "too many types";
 const char* exc_SwissCheese = "more holes than down spins";
 const char* exc_TooMany = "more particles than down spins";
 const char* exc_Limits = "base exceeds limits: more particles than slots for some sector";
-//const char* exc_Overflow = "overflow";
 const char* exc_HolesNotSet = "incomplete construction: number_holes not set";
 const char* exc_IDTooHigh = "ID too high";
 const char* exc_Infinite = "no infinite rapidities in anisotropic chain";
@@ -117,7 +116,6 @@ Base::Base (const Chain* const on_chain, const int the_number_roots, const vecto
 
 	if (its_structure.size() > p_chain->numberTypes()) throw Exception(here, exc_NumberTypes);
 	// empty vector gets modified to ground base. --- now in crop()
-// 	if (!its_structure.size()) its_structure.push_back(0);
 	// set the length of the other vectors
 	number_slots_sector.resize(its_structure.size()+1);
 	lim_id.resize(its_structure.size()+2);

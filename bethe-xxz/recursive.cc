@@ -373,47 +373,6 @@ bool Engine::scan (
 	all_scan.read(file_name);
 
 	const Chain* p_chain = quantity.pLeftState()->p_chain;
-/*
-	// initial scan: scan only an approximately fixed (MAX_INITIAL) number of states on each base to determine the relative order
-	for (int i=0; i< bases.size(); ++i) {
-		// check constraints
-		if (max_seconds != NOT_SET && calculation_time.seconds() > max_seconds) break;
-
-
-		// skip initial scan if done something before on this base
-		if (all_scan.numberAccepted(bases[i])) continue;
-		record.prog()<< "initial scan of base "<< name(bases[i]) <<endl;
-
-		// set a max number of states to scan
-		countdown = MAX_INITIAL;
-		p_base = newBase(p_chain, bases[i]);
-
-		/// SKIP BASES WITH MORE THAN 2 TWO_STRINGS (XXX SPECIFIC!)
-		if ((p_base->numberStringsOfType(1) > 1) || (p_base->numberTypes()>2)) {
-			record.prog()<<"skipping base "<<name(bases[i])<<endl;
-			delete p_base;
-			continue;
-		}
-		///
-
-		// do the initial scan
-		p_state_start = 0;
-		scanRecursive(1.0);
-		delete p_state_start;
-		delete p_base;
-
-		// merge the results into the overall intervals list, and clear for next round
-		all_scan.merge (last_scan);
-		last_scan.clear();
-
- 		record.prog()<< "base "<< name(bases[i]) <<SEP<< all_scan.summary(bases[i]) <<endl;
-		record.prog()<< "cumulative "<< all_scan.summary() <<SEP<< calculation_time.humanReadable() <<endl;
-	}
-	record.prog("end of initial scans");
-	record.prog()<<"cumulative "<< all_scan.summary() <<endl;
-*/
-	// no maximum number of states to scan
-// 	countdown=NOT_SET;
 
 	// sort bases by number of holes
 	sortBases(bases, 0, bases.size()-1, BaseComparator(&all_scan));
@@ -728,6 +687,3 @@ void Engine::scanState(State* const p_state_in, Interval& scan_result)
 	if (p_state != p_state_in) delete p_state;
 	quantity.setRightState(p_state_in);
 }
-
-
-

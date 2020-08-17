@@ -19,16 +19,6 @@ const char* exc_NotXXX = "cannot convert XXZ or gapped state to XXX";
 	}
 
 
-	/** assignment **/
-/*
-	XXX_State& XXX_State::operator= (const XXX_State& rhs)
-	{
-		if (this != &rhs) State::operator= ( State(rhs) );
-		return *this;
-	}
-*/
-
-
 
 	/** roots of the bethe equation **/
 	vector< complex<REAL> > XXX_State::roots (void) const
@@ -817,21 +807,4 @@ const char* exc_NotXXX = "cannot convert XXZ or gapped state to XXX";
 		for (int i=0; i<bethe_j.size();++i)
 			error += ::norm(bethe_j[i] -  0.5*round(2.0*real(bethe_j[i])));
 		return error;
-	/*
-		REAL error = 0.0;
-		vector< complex<REAL> > bethe_roots = roots();
-		for (int alpha=0; alpha < p_base->numberRoots(); ++alpha) {
-			if (	abs(real(bethe_roots[alpha])) < THRESHOLD_QUANTUM_NUMBER
-					&& abs(abs(imag(bethe_roots[alpha]))-0.5)< THRESHOLD_QUANTUM_NUMBER )
-				continue;
-			complex<REAL> lhs = pow( (bethe_roots[alpha]-0.5*I)/(bethe_roots[alpha]+0.5*I), p_chain->length());
-			for (int beta=0; beta<p_base->numberRoots(); ++beta){
-				if (alpha!=beta) lhs /= (bethe_roots[alpha]-bethe_roots[beta]-I)/(bethe_roots[alpha]-bethe_roots[beta]+I);
-			}
-			error += ::norm(1.0 - lhs);
-		}
-		return error;
-	*/
 	}
-
-

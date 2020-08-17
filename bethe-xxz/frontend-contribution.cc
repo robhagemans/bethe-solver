@@ -14,10 +14,6 @@ int run(void)
 	cin>> function_index >> delta >> number_sites >> left_number_down;
 	cerr<< "input complete"<<endl;
 
-
-	// TODO: have to separate Quantity from FormFactor or some such!!
-
-
 	Chain* p_chain = newChain (delta, number_sites);
 	Base* p_ground_base = newGroundBase (p_chain, left_number_down);
 	State* dummy_state = newGroundState (p_ground_base);

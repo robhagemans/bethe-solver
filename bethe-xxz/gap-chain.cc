@@ -1,7 +1,6 @@
 
 #include "gap-chain.h"
 
-//namespace Gapped {
 
 	Gap_Chain::Gap_Chain( const REAL delta_anisotropy, const int chain_length, const int cutoff_types)
 	{
@@ -29,6 +28,3 @@
 
 	inline REAL Gap_Chain::delta(void) const
 	{ 	return cosh(anisotropy);	}
-
-
-//}

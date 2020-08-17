@@ -3,7 +3,6 @@
 
 const char* exc_Rational = "rational zeta/pi";
 
-//namespace Gapless {
 
 	/** XXZ Chain: implementation **/
 
@@ -71,9 +70,3 @@ const char* exc_Rational = "rational zeta/pi";
 		string_parity[0] = 1;
 		string_parity[1] = -1;
 	}
-
-	//XXZ_Chain::~XXZ_Chain(void)	{	}
-
-
-
-//}

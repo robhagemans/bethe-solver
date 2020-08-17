@@ -41,12 +41,6 @@ public:
 	// NOTE: this was because it inherited public vector int, I guess...
 	int Young::readAt (const int index) const;
 	int& Young::writeAt (const int index);
-// 	inline int Young::at (const int index) const
-// 	{ return read(index); };
-// 	inline int Young::operator[] (const int index) const
-// 	{ 	return read(index); };
-// 	inline int& Young::operator[] (const int index)
-// 	{ 	return at(index); }
 
 
 	// number of tableaux of this width, height

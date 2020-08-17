@@ -44,8 +44,6 @@ bool NEWscanState(
 
 	if (!p_state->admissible()) {
  		scan_result.number_forbidden += weight;
-//  		addfunc.logstream<<name(p_state->base)<<"_id"<< p_state->id()<<": inadmissible, mode "<<p_state->mode()<<" q.n. "<<p_state->quantum_number<<endl;
-//  		return false;
 	}
 
 	State* p_right_state = 0;
@@ -119,7 +117,6 @@ bool NEWscanState(
 		addfunc(quantity);
 
 		scan_result.number_calculated += weight;
-// 		if (finite(quantity.formFactor()))	scan_result.sum += quantity.formFactor() * REAL(weight);
 	}
 	catch (Exception exc) {
 		if (exc.error == exc_Equal) scan_result.number_equal += weight;
@@ -173,7 +170,6 @@ REAL NEWscanBase (
 	REAL max_sum = quantity.maxSum ();
 
 	delete p_state;
-// cerr<<"sums:     "<<scan_result.sum<<SEP<<max_sum<<SEP<<scan_result.sum/max_sum<<endl;
 	return scan_result.sum/max_sum;
 }
 
@@ -242,7 +238,6 @@ public:
   			cout<<int(2.0*two_j)<<SEP;
 		}
 
-// 		cout<<p_iso_state->betheError()<<SEP;
 
 
 
@@ -256,23 +251,6 @@ public:
 
  		cout<<p_state->energy()<<SEP;
    		cout<<sqrt(error)<<endl;
-/*
-		XXXDeviatedState& dev_state = *( (XXXDeviatedState*) &state);
-		try {
-			if (dev_state.oddSymmetric()) {
-				cerr<<name(state.base)<<"_id"<<state.id()<<SEP<<iso_state.betheError()<<SEP;
-				cerr<<state.admissible()<<SEP<<dev_state.oddSymmetric()<<SEP<<state.symmetric()<<SEP;
-				cerr<<quantity.formFactor()<<endl;
-				cerr<<state.roots()<<endl<<state.quantum_number<<endl;;
-				cerr<<dev_state.betheError()<<endl;
-
-			}
- 			if (finite(quantity.formFactor())) sum += quantity.formFactor();
-		}
-		catch (Exception exc) {
- 			cerr<<"(error)"<<endl;
-		}
-*/
 		++count;
 	};
 };
@@ -291,44 +269,20 @@ int run(void)
 	int number_energy;
 	REAL max_energy;
 
-	//Policy policy = {1000, 1, 1e-28, 1e-2, 1e-2, 10.0, 1, 20}; // fewer newtons for large N; DEFAULT_POLICY is better for small systems
 	Policy policy = {2000, 100, 1e-30, 1e-2, 1e-2, 10.0, 7, 20};
 
 	cerr<<"N  M"<<endl;
 	cin >> number_sites >> number_down_left;
-cerr<<"1";
 	Chain* p_chain = newChain (delta, number_sites, /* cutoff_types = */ 8);
-cerr<<"2";
 	Base* p_ground_base = newGroundBase (p_chain, number_down_left);
-cerr<<"3";
 	State* p_ground_state = newGroundState (p_ground_base);
-cerr<<"4";
 	Quantity* p_quantity = newQuantity(-1, p_ground_state);
-cerr<<"5";
-// 	Quantity* p_minus = newQuantity(1, p_ground_state);
-// 	Quantity* p_plus = newQuantity(-1, p_ground_state);
-cerr<<"6";
 
 	p_ground_state->solve();
-/*
-	//_R4_s0_base-1-0-1_id0:
-	Base* p_base = newBase("_R4_s0_base-1-0-1", p_chain);
-	State* p_state = newState(*p_base, 0);
-	solve(p_state, policy,  1e-20);
-	cout<<p_state->roots()<<endl;
-	cout<<( (XXXDeviatedState*) p_state)->calculateBetheI()<<endl;
-	return 0;
-*/
-cerr<<"7";
 	int number_down_right = p_quantity->rightNumberDown();
-cerr<<"8";
 	vector< BaseData > all_bases = allNewBases(p_chain, number_down_right, /* max_string_length= */ number_down_right, /* max_number_particles= */ number_down_right, /*max_number_spinons= */ number_down_right, /*max_infinite= */ 0);//p_quantity->maxInfinite());
-cerr<<"9";
 	Stopwatch calculation_time;
 
-// 	Matrix<REAL> basket (number_energy, number_sites);
-// 	AddToMatrixFunc bin_this (basket, max_energy);
-// 	AddToFileFunc dump_screen (cout, cerr);
 	DumpRoots dump_roots;
 	cout.precision(15);
 

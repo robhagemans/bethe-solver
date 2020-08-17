@@ -32,18 +32,6 @@ const REAL XXXDeviatedState::epsilon_deviation_norm = 1e-16;
 const REAL XXXDeviatedState::epsilon_energy = 1e-10;
 
 
-/** xi: argument-like function or 'continuous arctan', see notes. **/
-/*
-// minimum norm to actually calculate xi; pi/2 if smaller than this. avoids division by zero and unpredictable results.
-//#define EPSILON_XI 1e-18
-#define EPSILON_XI 0.0
-// argument-like function or 'continuous arctan', see notes.
-inline long double xi (const long double epsilon, const long double delta)
-{
-	return (abs(delta) < EPSILON_XI) ? 0.5*PI*sgn(epsilon) :
-		(atan(epsilon/delta) + ((delta<0.0)?PI*sgn(epsilon):0));
-}
-*/
 
 // argument-like function or 'continuous arctan', see notes.
 inline long double xi (const long double epsilon, const long double delta)
@@ -149,19 +137,14 @@ inline long double xi (const long double epsilon, const long double delta)
 						REAL del_b = deviance (j, alpha, b);
 						REAL eps_b = aberration (j, alpha, b);
 						if (b==a-1) {
-// 							theta -= atan( (eps-eps_b)/(2.0-del+del_b) );
 							theta -= xi( (eps-eps_b), (2.0-del+del_b) );
 							log_r -= log( sq(eps-eps_b) + sq(2.0-del+del_b) );
 						}
 						else if (b==a+1) {
-// 							theta -= atan( (eps-eps_b)/(2.0+del-del_b) );
  							theta -= xi( (eps-eps_b), (2.0+del-del_b) );
 							log_r += log( sq(eps-eps_b) + sq(2.0+del-del_b) );
 						}
 						else {
-// 							theta -=  atan( (eps-eps_b)/(1.0-(a-b)+(del-del_b)) )
-// 									+ atan( (eps-eps_b)/(1.0+(a-b)-(del-del_b)) )
-// 									+ PI*sgn(eps-eps_b);
 							theta -=  xi( (eps-eps_b), (1.0-(a-b)+(del-del_b)) )
 									+ xi( (eps-eps_b), (1.0+(a-b)-(del-del_b)) );
 
@@ -443,7 +426,6 @@ inline long double xi (const long double epsilon, const long double delta)
 			// note that odd symmetric complexes have very close real central roots, but are okay.
 			// since they're on different strings, they won't trigger this test.
 			if (abs(root(j, alpha, a) - root(j, alpha, a+1)) < epsilon_collapse) {
-// cerr<<"collapse "<<j<<SEP<<alpha<<SEP<<a<<SEP<<deviance(j, alpha,a)<<endl;
 				return false;
 			}
 		}
@@ -891,5 +873,3 @@ if (p_chain->stringLength(j) != 2) return 1;
 			magnitude += sq(deviance(j, alpha, a)) + sq(aberration(j, alpha, a));
 		return magnitude;
 	}
-
-

@@ -21,7 +21,6 @@ public:
 
 		int j = STRING_TYPE;
 		cout<<p_state->p_chain->length()<<SEP;
-// 		cout<<p_state->id()<<SEP;
 		cout<<p_state->quantum_number(j,0)<<SEP;
 		cout<<p_state->quantum_number(j,0)%(2*(STRING_TYPE+1))<<SEP;
 
@@ -100,9 +99,6 @@ int run(void)
 		State* p_test_state = newState(p_test_base, NO_ID);
 		Strip<int> quantum_number = p_test_state->quantum_number;
 		// find n quantum numbers around the factor to get all branches
-// 		int quantum_number_base = 2 * (int) round(quantum_number_factor*number_sites);
-// 		for (int i=0; i < STRING_TYPE+1; ++i) {
-// 			quantum_number (STRING_TYPE,0) = quantum_number_base + 2*i;
 quantum_number (STRING_TYPE,0) = number_sites-6;
 			p_test_state->setQuantumNumbers (quantum_number);
 			try {
@@ -117,7 +113,6 @@ quantum_number (STRING_TYPE,0) = number_sites-6;
 			catch (Exception exc) {
 				cerr<<exc<<endl;
 			}
-// 		}
 
 	}
 

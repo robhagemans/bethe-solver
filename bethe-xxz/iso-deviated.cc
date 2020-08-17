@@ -32,18 +32,6 @@ const REAL XXXDeviatedState::epsilon_deviation_norm = 1e-16;
 const REAL XXXDeviatedState::epsilon_energy = 1e-10;
 
 
-/** xi: argument-like function or 'continuous arctan', see notes. **/
-/*
-// minimum norm to actually calculate xi; pi/2 if smaller than this. avoids division by zero and unpredictable results.
-//#define EPSILON_XI 1e-18
-#define EPSILON_XI 0.0
-// argument-like function or 'continuous arctan', see notes.
-inline long double xi (const long double epsilon, const long double delta)
-{
-	return (abs(delta) < EPSILON_XI) ? 0.5*PI*sgn(epsilon) :
-		(atan(epsilon/delta) + ((delta<0.0)?PI*sgn(epsilon):0));
-}
-*/
 
 // argument-like function or 'continuous arctan', see notes.
 inline long double xi (const long double epsilon, const long double delta)
@@ -891,5 +879,3 @@ if (p_chain->stringLength(j) != 2) return 1;
 			magnitude += sq(deviance(j, alpha, a)) + sq(aberration(j, alpha, a));
 		return magnitude;
 	}
-
-

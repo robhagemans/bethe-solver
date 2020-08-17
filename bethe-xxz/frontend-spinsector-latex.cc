@@ -51,8 +51,6 @@ bool NEWscanState(
 
 	if (!p_state->admissible()) {
  		scan_result.number_forbidden += weight;
-//  		addfunc.logstream<<name(p_state->base)<<"_id"<< p_state->id()<<": inadmissible, mode "<<p_state->mode()<<" q.n. "<<p_state->quantum_number<<endl;
-//  		return false;
 	}
 
 	State* p_right_state = 0;
@@ -161,31 +159,8 @@ REAL NEWscanBase (
 	REAL max_sum = quantity.maxSum ();
 
 	delete p_state;
-// cerr<<"sums:     "<<scan_result.sum<<SEP<<max_sum<<SEP<<scan_result.sum/max_sum<<endl;
 	return scan_result.sum/max_sum;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -223,9 +198,6 @@ public:
 		}
 
 
-//   		cout<<sqrt(error)<<SEP;
-// 		cout<<iso_state.betheError()<<SEP;
-
 		for (int j=0; j< state.base.numberTypes();++j)
 		for (int alpha=0; alpha< state.base.numberStringsOfType(j);++alpha) {
 			int length_j = state.chain.stringLength(j);
@@ -261,24 +233,6 @@ public:
 		}
 
  		cout<<"$"<<state.energy()<<"$ \\\\"<<endl;
-
-/*
-		XXXDeviatedState& dev_state = *( (XXXDeviatedState*) &state);
-		try {
-			if (dev_state.oddSymmetric()) {
-				cerr<<name(state.base)<<"_id"<<state.id()<<SEP<<iso_state.betheError()<<SEP;
-				cerr<<state.admissible()<<SEP<<dev_state.oddSymmetric()<<SEP<<state.symmetric()<<SEP;
-				cerr<<quantity.formFactor()<<endl;
-				cerr<<state.roots()<<endl<<state.quantum_number<<endl;;
-				cerr<<dev_state.betheError()<<endl;
-
-			}
- 			if (finite(quantity.formFactor())) sum += quantity.formFactor();
-		}
-		catch (Exception exc) {
- 			cerr<<"(error)"<<endl;
-		}
-*/
 		++count;
 	};
 };
@@ -307,28 +261,14 @@ int run(void)
 	Base* p_ground_base = newGroundBase (*p_chain, number_down_left);
 	State* p_ground_state = newGroundState (*p_ground_base);
 	Quantity* p_quantity = newQuantity(-1, *p_ground_state);
-// 	Quantity* p_minus = newQuantity(1, *p_ground_state);
-// 	Quantity* p_plus = newQuantity(-1, *p_ground_state);
 
 
 	p_ground_state->solve();
-/*
-	//_R4_s0_base-1-0-1_id0:
-	Base* p_base = newBase("_R4_s0_base-1-0-1", p_chain);
-	State* p_state = newState(*p_base, 0);
-	solve(p_state, policy,  1e-20);
-	cout<<p_state->roots()<<endl;
-	cout<<( (XXXDeviatedState*) p_state)->calculateBetheI()<<endl;
-	return 0;
-*/
 	int number_down_right = p_quantity->rightNumberDown();
 	vector< Base* > all_bases = allNewBases(p_chain, number_down_right, /* max_string_length= */ number_down_right, /* max_number_particles= */ number_down_right, /*max_number_spinons= */ number_down_right, /*max_infinite= */ 0);//p_quantity->maxInfinite());
 
 	Stopwatch calculation_time;
 
-// 	Matrix<REAL> basket (number_energy, number_sites);
-// 	AddToMatrixFunc bin_this (basket, max_energy);
-// 	AddToFileFunc dump_screen (cout, cerr);
 	DumpRoots dump_roots;
 	cout.precision(15);
 

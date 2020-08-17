@@ -1,6 +1,5 @@
 #include "iso-chain.h"
 
-//namespace Isotropic {
 
 	/** XXX Chain: implementation **/
 
@@ -20,5 +19,3 @@
 			string_parity[i] = 1;
 		}
 	}
-
-//}

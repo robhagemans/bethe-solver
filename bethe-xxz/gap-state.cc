@@ -170,16 +170,6 @@ const char* exc_RapidityCollision = "rapidity collision";
 	{
 		const char* here = "Gap_State::admissible";
 
-/*
-		// check for -max quantum numbers. (which would equal +max and are hence doubly counted if we allow them)
-		vector<int> limits = p_base->limQuantumNumbers();
-		for (int j=0; j < p_base->numberTypes(); ++j) {
-			int excluded_number = - limits[j] + 2;
-			for (int alpha=0; alpha < p_base->numberStringsOfType(j); ++alpha) {
-				if (quantum_number(j,alpha) <= excluded_number) return false;
-			}
-		}
-*/
 		// select a single period
 		for (int j=0; j < p_base->numberTypes(); ++j)
 		for (int alpha=0; alpha < p_base->numberStringsOfType(j); ++alpha)
@@ -210,23 +200,6 @@ const char* exc_RapidityCollision = "rapidity collision";
 				else return false;
 			}
 		}
-/*
-		// find highest and lowest rapidities
-		vector<REAL> highest_ising (p_base->numberTypes());
-		vector<REAL> lowest_ising (p_base->numberTypes());
-		for (int type_j=0; type_j < p_base->numberTypes(); ++type_j) {
-			highest_ising[type_j] = lowest_ising[type_j] = ising_rapidity_over_pi[type_j][0];
-			for (int alpha=0; alpha < p_base->numberStringsOfType(type_j); ++alpha) {
-				if (ising_rapidity_over_pi[type_j][alpha] > highest_ising[type_j]) highest_ising[type_j] = ising_rapidity_over_pi[type_j][alpha];
-				if (ising_rapidity_over_pi[type_j][alpha] < lowest_ising[type_j]) lowest_ising[type_j] = ising_rapidity_over_pi[type_j][alpha];
-			}
-		}
-
-		// check whether the distance between quantum numbers is not higher than PI
-		for (int type_j=0; type_j < p_base->numberTypes(); ++type_j)
-		for (int type_k=0; type_k < p_base->numberTypes(); ++type_k)
-			if (highest_ising[type_j] - lowest_ising[type_k] - 1.0 > -COLLISION_THRESHOLD) return false;
-*/
 
 		// we survived all checks!
 		return true;

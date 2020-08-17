@@ -19,7 +19,6 @@ int run(void)
 	int number_down_left;
 
 	Policy policy = {2000, 1, 1e-28, 1e-2, 1e-2, 10.0, 1, 20}; // fewer newtons for large N; DEFAULT_POLICY is better for small systems
-	//Policy policy = {2000, 100, 1e-30, 1e-2, 1e-2, 10.0, 7, 20};
 
 	cerr<<"N"<<endl;
 	cin >> max_number_sites;
@@ -35,7 +34,6 @@ int run(void)
 
 		p_ground_state->solve();
 
-		//_R4_s0_base-1-0-1_id0:
 		Base* p_base = newBase("_R4_s0_base-1-0-1", p_chain);
 		State* p_state = newState(*p_base, 0);
 		solve(p_state, policy,  1e-20);
@@ -53,7 +51,6 @@ int run(void)
 		for (int i=0; i<bethe_j.size();++i) {
 			REAL two_j = 0.5*round(2.0*real(bethe_j[i]));
 			error += norm(bethe_j[i] -  two_j);
-// 			cout<<two_j<<SEP;
 		}
 		cout<<"$"<<sqrt(error)<<"$ \\\\"<<endl;
 
