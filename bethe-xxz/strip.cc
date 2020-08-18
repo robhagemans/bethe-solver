@@ -18,20 +18,30 @@ Strip<number>::Strip (const Base* const new_p_base, const number initial_value)
 // 	: p_base(new_p_base), number_types(new_p_base->numberTypes()), index_table(new_p_base->numberTypes()+1), elements(0)
 	: p_base(new_p_base), number_types(new_p_base->numberTypes())
 {
+	// build structure
+	buildStructure();
+
+	// set initial values
+	for (int i = 0; i < numberElements(); ++i)
+		elements[i] = initial_value;
+}
+
+template<class number>
+void Strip<number>::buildStructure()
+{
 	int number_elements = 0;
 	for (int j=0; j< number_types; ++j) {
 		number_elements += p_base->numberStringsOfType(j);
 	}
 	elements = new number[number_elements];
-	index_table = new int[new_p_base->numberTypes()+1];
+	index_table = new int[p_base->numberTypes()+1];
 	index_table[0]=0;
 	// look out! the last pointer points one past the allocated space. // useful to get size info.
 	for (int i = 1; i <= number_types; ++i)
 		index_table[i] = index_table[i-1] + p_base->numberStringsOfType(i-1);
-	// zero out.
-	for (int i = 0; i < number_elements; ++i)
-		elements[i] = initial_value;
+
 }
+
 
 
 // copy constructor
@@ -60,6 +70,28 @@ Strip<number>& Strip<number>::operator= (const Strip<number>& original)
 			if (index_table[i] != original.index_table[i])
 				throw Exception("Strip::operator=", exc_BadAssignASDEFINEDINTHISFILE, "(index table)");
 		}
+		// copy elements
+		for (int i = 0; i < original.numberElements(); ++i)
+			elements[i] = original.elements[i];
+	}
+
+}
+
+
+
+// forced assignment
+template<class number>
+Strip<number>& Strip<number>::forceAssign (const Strip<number>& original)
+{
+
+	if (this != &original) {
+		// deep copy base
+		p_base = original.p_base->clone();
+		number_types = original.number_types;
+
+		// reconstruct structure
+		buildStructure();
+
 		// copy elements
 		for (int i = 0; i < original.numberElements(); ++i)
 			elements[i] = original.elements[i];
@@ -112,6 +144,16 @@ template<class number>
 FullStrip<number>::FullStrip (const Base* const new_p_base, const number initial_value)
 	: p_base(new_p_base), number_types(new_p_base->numberTypes())
 {
+	buildStructure();
+	// zero out.
+	for (int i = 0; i < numberElements(); ++i)
+		elements[i] = initial_value;
+}
+
+
+template<class number>
+void FullStrip<number>::buildStructure()
+{
 	int number_elements = p_base->numberRoots();
 
 	elements = new number[number_elements];
@@ -122,11 +164,8 @@ FullStrip<number>::FullStrip (const Base* const new_p_base, const number initial
 	for (int i = 1; i <= number_types; ++i)
 		index_table[i] = index_table[i-1] + p_base->numberStringsOfType(i-1) * p_base->p_chain->stringLength(i-1);
 
-	// zero out.
-	for (int i = 0; i < number_elements; ++i)
-		elements[i] = initial_value;
-}
 
+}
 
 // copy constructor
 template<class number>
@@ -160,11 +199,31 @@ FullStrip<number>& FullStrip<number>::operator= (const FullStrip<number>& origin
 	}
 }
 
+// forced assignment
+template<class number>
+FullStrip<number>& FullStrip<number>::forceAssign (const FullStrip<number>& original)
+{
+
+	if (this != &original) {
+		// deep copy base
+		p_base = original.p_base->clone();
+		number_types = original.number_types;
+
+		// reconstruct structure
+		buildStructure();
+
+		// copy elements
+		for (int i = 0; i < original.numberElements(); ++i)
+			elements[i] = original.elements[i];
+	}
+
+}
 
 // destructor
 template<class number>
 FullStrip<number>::~FullStrip()
 {
+
 	delete[] elements;
 	delete[] index_table;
 }
@@ -242,7 +301,9 @@ Strip<number>& Strip<number>::operator= (const Strip<number>& original)
 
 // destructor
 template<class number>
-Strip<number>::~Strip() { }
+Strip<number>::~Strip()
+{
+}
 
 
 

@@ -16,6 +16,11 @@ using namespace std;
 #define exc_BadAssignASDEFINEDINTHISFILE "bad assignment"
 
 #ifndef STALINIST_RANGE_CHECK
+/* class Strip
+/* array of pointers to various points in the same array of numbers
+/* last pointer in the array points one past the end of the array.
+/**/
+
 
 template<class number>
 class Strip {
@@ -29,6 +34,7 @@ public:
 	Strip (const Strip& original);	// copy constructor
 	~Strip();
 	Strip<number>& operator= (const Strip<number>& original); // assignment
+	Strip<number>& forceAssign (const Strip<number>& original); // assignment, works for different structures as well
 
 	inline number element(int i) const { return elements[i]; }
 	inline number& element(int i) { return elements[i];	}
@@ -43,11 +49,14 @@ public:
 	inline int numberStringsOfType (const int j) const 	{ return (j<number_types)?(index_table[j+1] - index_table[j]):0; };
 
 	inline int numberElements(void) const  { return (index_table[number_types] - index_table[0]);	};
+protected:
+	void buildStructure();
 };
 
 
 template<class number, class Compare>
 	void sort(Strip<number>& strip_to_sort, Compare compare);
+
 
 
 
@@ -67,6 +76,8 @@ public:
 	~FullStrip();
 	// assignment
 	FullStrip<number>& operator= (const FullStrip<number>& original);
+	// forced assignment
+	FullStrip<number>& forceAssign (const FullStrip<number>& original);
 
 	// index triplet to index
 	inline int index(const int j, const int alpha, const int a) const {  return  a + alpha*p_base->p_chain->stringLength(j) + index_table[j]; };
@@ -84,6 +95,8 @@ public:
 	inline int numberStringsOfType (const int j) const  { 	return (j<number_types)?(index_table[j+1] - index_table[j]):0;  };
 
 	inline int numberElements(void) const  { return (index_table[number_types] - index_table[0]);};
+protected:
+	void buildStructure();
 };
 
 #else
