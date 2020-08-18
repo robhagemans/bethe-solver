@@ -137,19 +137,14 @@ inline long double xi (const long double epsilon, const long double delta)
 						REAL del_b = deviance (j, alpha, b);
 						REAL eps_b = aberration (j, alpha, b);
 						if (b==a-1) {
-// 							theta -= atan( (eps-eps_b)/(2.0-del+del_b) );
 							theta -= xi( (eps-eps_b), (2.0-del+del_b) );
 							log_r -= log( sq(eps-eps_b) + sq(2.0-del+del_b) );
 						}
 						else if (b==a+1) {
-// 							theta -= atan( (eps-eps_b)/(2.0+del-del_b) );
  							theta -= xi( (eps-eps_b), (2.0+del-del_b) );
 							log_r += log( sq(eps-eps_b) + sq(2.0+del-del_b) );
 						}
 						else {
-// 							theta -=  atan( (eps-eps_b)/(1.0-(a-b)+(del-del_b)) )
-// 									+ atan( (eps-eps_b)/(1.0+(a-b)-(del-del_b)) )
-// 									+ PI*sgn(eps-eps_b);
 							theta -=  xi( (eps-eps_b), (1.0-(a-b)+(del-del_b)) )
 									+ xi( (eps-eps_b), (1.0+(a-b)-(del-del_b)) );
 
@@ -431,7 +426,6 @@ inline long double xi (const long double epsilon, const long double delta)
 			// note that odd symmetric complexes have very close real central roots, but are okay.
 			// since they're on different strings, they won't trigger this test.
 			if (abs(root(j, alpha, a) - root(j, alpha, a+1)) < epsilon_collapse) {
-// cerr<<"collapse "<<j<<SEP<<alpha<<SEP<<a<<SEP<<deviance(j, alpha,a)<<endl;
 				return false;
 			}
 		}
