@@ -112,6 +112,16 @@ protected:
 	virtual complex<long double> scatteringDerivativeRightDev (const int undev_j, const int j, const int alpha, const int k, const int beta, const int b) const;
 	virtual long double scatteringDerivativeNoDev (const int undev_j, const int j, const int alpha, const int undev_k, const int k, const int beta) const;
 
+
+// RLH2008
+	double findRoot1(const int bethe_2xj, const double eps, const double lam_guess);
+	double exRealIndicator1(const int bethe_2xj, const double eps, const double lam);
+	double exRealIndicator2(const int bethe_2xj, const double eps, const double lam);
+	bool findExtraReal(const int j, const int alpha, const int a);
+
+	int getSum2xBetheQuantum (const int j, const int alpha) const;
+	void rebase(const int j, const int alpha, const int a);
+
 };
 
 
