@@ -31,7 +31,7 @@ public:
 
 		XXX_State& iso_state = *( (XXX_State*) p_state);
 
-		cout<<"2J: "<<iso_state.calculateBethe2I()<<SEP;
+		cout<<"2J: "<<iso_state.calculateBetheI()<<SEP;
  		cout<<"error: "<<iso_state.betheError()<<SEP;
 
 		cout<<endl;
@@ -48,18 +48,16 @@ public:
 		State* p_state = quantity.pRightState();
 
 		int j = string_type_;
-		//cout<<p_state->quantum_number(j,0)<<SEP;
-		//cout<<p_state->quantum_number(j,0)%(2*(j+1))<<SEP;
-		cout<<endl;
+		cout<<p_state->quantum_number(j,0)<<SEP;
+		cout<<p_state->quantum_number(j,0)%(2*(j+1))<<SEP;
 		cout<<p_state->quantum_number<<SEP;
-		cout<<endl;
 
 		for (int alpha=0; alpha< p_state->p_base->numberStringsOfType(j);++alpha)
 		for (int a=0; a<p_state->p_chain->stringLength(j); ++a)	{
 			complex<REAL> ze_root = p_state->root(j, alpha, a);
 			cout<<real(ze_root)<<SEP<<imag(ze_root)<<SEP;
 		}
-        cout<<endl;
+
 		cout<<"conv: "<<p_state->convergence<<SEP;
 
 		XXX_State& iso_state = *( (XXX_State*) p_state);
@@ -94,7 +92,7 @@ int run(void)
 	//number_sites = 22;
 	//number_down_left = 2;
 	number_sites = 48;
-	number_down_left = 4;
+	number_down_left = 4;  //4
 
 	Chain* p_chain = newChain (delta, number_sites, 8);	// cutoff_types=8
 	Base* p_ground_base = newGroundBase (p_chain, number_down_left);
@@ -103,6 +101,7 @@ int run(void)
 
 	// override standard policies and solve
 	State::precision = 1e-26*number_sites*number_sites;
+
 	State::max_iterations = 20000;
 	p_ground_state->solve();
 
@@ -111,9 +110,12 @@ int run(void)
 
 	cout.precision(15);
 
-//#define ONESTATE
-#define STRING_TYPE 2
-//3
+#define ONESTATE
+#define STRING_TYPE 3
+
+//#define ALLBASE
+
+//#define STRING_TYPE 1
 
 #ifdef ALLBASE
 // all bases:
@@ -130,8 +132,8 @@ int run(void)
 	DumpRootsForString dump_roots(STRING_TYPE);
 	// one n-string, all others real
 	vector<int> base_vec (STRING_TYPE+1, 0);
-	base_vec[0] = 1; // number_down_right-STRING_TYPE-1;
-	base_vec[STRING_TYPE] = 1; //1;
+	base_vec[0] = number_down_right-STRING_TYPE-1;
+	base_vec[STRING_TYPE] = 1;
 
 	// no spinons, just the string.
 	Base* p_test_base = newBase(p_chain, base_vec, 0);
