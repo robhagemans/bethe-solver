@@ -410,7 +410,6 @@ inline long double xi (const long double epsilon, const long double delta)
 			// our iterate method is aware of deviance and increments iterations
  			iterate();
  			// bail out if we're diverging too much
- 			/// TODO: should be policy variable.
  			if (abs(convergence) > solve_bailout) return false;
 		}
 		if (abs(convergence) > precision) return false;
@@ -430,10 +429,16 @@ inline long double xi (const long double epsilon, const long double delta)
 			{
 				// collapse signals extra real solutions. new approach.
 
-/** RLH2008 **/
 cerr<<"collapse "<<j<<SEP<<alpha<<SEP<<a<<SEP<<deviance(j, alpha,a)<<SEP<<aberration(j,alpha,a)<<endl;
-cerr<<quantum_number<<endl;
-cerr<<roots()<<endl;
+cerr<<"roots:" << roots()<<endl;
+cerr<<"takahashi qn: " << quantum_number<<endl;
+cerr<<"bethe qn: "<< calculateBetheI()<<endl;
+
+int j=3; int alpha=0; int a=1;
+
+            	if (!findExtraReal(j, alpha, a)) return false;
+
+				/*
 				// we assume a two-string. longer collapsing strings not yet supported.
 				hold(j, alpha) = true;
 				hold_deviation(j,alpha,a) = true;
@@ -448,7 +453,7 @@ cerr<<roots()<<endl;
 					if (abs(convergence) > solve_bailout) return false;
 				}
 				if (abs(convergence) > precision) return false;
-/** /RLH2008 **/
+				*/
 
 
 			}
@@ -464,12 +469,6 @@ cerr<<roots()<<endl;
 bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 {
 
-	// this should only be called after a collapse. we assume rapidity j, alpha is set to a collapsing solution
-	const int max_iter = 1000;
-	const double ex_real_precision = 1e-10;
-	const double start_distance = 1e-5;
-
-
 	// extract sum of Bethe J's from Takahashi I
 	int length_j = p_chain->stringLength(j);
 	int sum_2x_bethe_quantum = quantum_number(j, alpha) + p_chain->length()*(length_j-1);
@@ -484,127 +483,107 @@ bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 	int jx2;
 	if (length_j==2) {
 		// now, we have the sum of two numbers. we also know the two numbers are equal.
-		// so, we know the two numbers, right? right? not right.
-		// since we're working modulo N, there's two solutions to that equation.
-		// yes, it pisses me off, too.
-		// however, the leap of faith we make is the following: if the numbers were close to zero,
-		// we'd have a regular, christian, tax-paying, real solution. strings are close to the borders.
-		// so extra real solutions (which are really just cross-dressing strings) should be found there as well.
+		// since we're working modulo N, there's two solutions to that equation: 2J = sum (mod N)  ==>  J = sum/2 (mod N/2)
+        // we expect to find string-like solutions near the border of the accepted interval.
 		jx2 = sum_2x_bethe_quantum/2;
 		// I'm also hoping that jx2 is somehow in the interval [-N..N]
 		if ( abs(jx2) < p_chain->length()/2) jx2 -= sgn(jx2)*p_chain->length();
 		// in which case it's now in the outer halves of that interval. phew!
 		// I'm still not quite sure why exactly I need to choose this.
-		// however, if we'd pay someone to consider the extremely boring question as to why this is the case,
-		// we might find out.
-		// I hate modular arithmetic.
 	}
 	else {
+
 		// here we need a conjecture for the bethe-J configuration.
-		// looking at the sequence of solutions, it looks verry probable that *all* strings consist of sequential quantum numbers.
-		return false;
+	    // we assume the quantum numbers for the collapsed solution are correct
+	    vector<int> all_jx2 = calculateBethe2I();
+
+	    // get the quantum number corresponding to (j,alpha,a) out of this vector:
+	    // this should be equivalent to that for (j,alpha,a+1) as these are a collapsed pair.
+	    // also establish barrier brackets in this loop at the location of the nearest string rapidities.
+	    for (int index=0, k=0; k < p_base->numberTypes(); ++k)
+	    for (int beta=0; beta < p_base->numberStringsOfType(k); ++beta)
+		for (int b=0; b < p_chain->stringLength(k); ++b, ++index) {
+
+		    if ((k==j) && (beta==alpha) && (b==a))  {
+		        jx2 = all_jx2[index];
+		    }
+        }
 	}
-
-cerr<<jx2<<endl;
-
-
-	// first find the trivial root. we only need to check one equation far that.
-	// use collapsed rapidity as initial guess
-	//TODO: check: we choose the middle rapidity, assuming it has zero aberration. will this work for all cases?
-
-	double x_trivial = 0.0;
-	double y_trivial = findRoot1(jx2, x_trivial, rapidity(j,alpha));
-
-	if (isNan(y_trivial)) return false;
-
-	// now that we have the trivial root, let's look for the other.
-	// here we need to check both equations
-
-	// fishing expedition to bracket a second root for positive x
-	double x_min = x_trivial + start_distance;
-	// find y for this x (stay on root curve for indicator_1), use y_trivial as guess
-
-	double y_min = findRoot1(jx2, x_min, y_trivial);
-	if (isNan(y_min)) return false;
-	// get the second indicator function
-	double f_min = exRealIndicator2(jx2, x_min, y_min);
-
-	// outer bracket
-	double x_max = x_min;
-	double y_max = y_min;
-	double f_max;
-
-	int iter = 0;
-
-	// fishing expedition for *one* extra root
-	do {
-		x_max += 1.0;
-		// stay on root curve for indicator_1, use last y as guess
-		y_max = findRoot1(jx2, x_max, y_max);
-		// can't find the curve, drop out
-		if (isNan(y_max)) return false;
-		// second indicator function
-		f_max = exRealIndicator2(jx2, x_max, y_max);
-
-//cout<<iter<<"  ";
-//cout<<x_min<<" "<<y_min<<" "<<f_min<<"   ";
-//cout<<x_max<<"  "<<y_max<<" "<<f_max<<endl;
-
-		if (++iter > max_iter) return false;
-	} while ( sgn(f_min) == sgn(f_max) );
-//cout<<endl;
+cerr<<"j: "<<jx2*0.5<<endl;
 
 
-	double x_try, y_try, f_try;
-	// we now have a bracket. zoom in.
-	while ( abs(x_max - x_min) + abs(y_max-y_min) >= ex_real_precision ) {
-		// interpolate
-		//x_try = (abs(f_min)*x_max + abs(f_max)*x_min) / (abs(f_max)+abs(f_min));
-		// bisect
-		x_try = 0.5*(x_min+x_max);
-		// stay on curve. use last y_try as guess
-		y_try = findRoot1 (jx2, x_try, y_try);
-		if (isNan(y_try)) return false;
-		f_try = exRealIndicator2 (jx2, x_try, y_try);
+	// use this just to solve for the two real ones, by stating from the assumption that their scattering is maximal (pi/2)
+	// and then finding the scattering by iteration.
 
-		if (sgn(f_try)==0) {
-			// not bloody likely
-			x_min = x_max = x_try;
-			y_min = y_max = y_try;
-			f_min = f_max = f_try;
-		}
-		else if (sgn(f_try) == sgn(f_min)) {
-			x_min = x_try;
-			y_min = y_try;
-			f_min = f_try;
-		}
-		else {
-			x_max = x_try;
-			y_max = y_try;
-			f_max = f_try;
-		}
-//cout<<iter<<"  ";
-//cout<<x_min<<" "<<y_min<<" "<<f_min<<"   ";
-//cout<<x_max<<"  "<<y_max<<" "<<f_max<<endl;
+	// self-scattering
+	double pair_scat = 0.5*PI;
 
-		if (++iter > max_iter) return false;
-	}
+	// start with collapsed solution
+	double lambda_0 = real(root(j,alpha,a));
+	double lambda_1 = real(root(j,alpha,a));
 
-//cout<<indicator1(x_min, y_min)<<" "<< indicator2(x_min, y_min)<<endl;
-//cout<<indicator1(x_max, y_max)<<" "<< indicator2(x_max, y_max)<<endl;
+	for (int i=0; i<200; ++i) {
+
+	    for (int i2=0; i2<10; ++i2) {
+            // scattering with other roots
+            complex<double> other_scat_0 = 0.0;
+            complex<double> other_scat_1 = 0.0;
+
+            for (int index=0, k=0; k < p_base->numberTypes(); ++k)
+            for (int beta=0; beta < p_base->numberStringsOfType(k); ++beta)
+            for (int b=0; b < p_chain->stringLength(k); ++b, ++index) {
+                if ((k!=j) || (beta!=alpha) || ((b!=a) && (b!=a+1)))  {
+                    other_scat_0 += atan( lambda_0 - root(k,beta,b) );
+                    other_scat_1 += atan( lambda_1 - root(k,beta,b) );
+                }
+            }
+
+            // other_scat ought to be a real number... may need to do the scattering sum in conjugate pairs to enforce that
+            // for now, just take the real part in the following.
+        cerr << "imag(other_scat): "<< imag(other_scat_0) << " " << imag(other_scat_1)<< endl;
 
 
-	// this turns a near pair into two real roots
-//FIXME: this only works for two-strings?
-	rapidity(j,alpha) = 0.5*(y_min+y_max);
-	aberration(j,alpha,a) = 0;
-	aberration(j,alpha,a+1) = 0.5*(x_min+x_max);
-	deviance(j,alpha,a) = -0.5;
-	deviance(j,alpha,a+1) = 0.5;
+            // bethe equation for the extra real roots
+            // we set lambda_0 > lambda_1 so lambda_0 has the scattering sign pair_scat = pi/2
+            lambda_0 = 0.5*tan( (PI * 0.5*jx2 + real(other_scat_0) + pair_scat) / (1.0*p_chain->length()) );
+            lambda_1 = 0.5*tan( (PI * 0.5*jx2 + real(other_scat_1) - pair_scat) / (1.0*p_chain->length()) );
 
-//cout<<roots()<<endl;
+        cerr<< "length "<< (1.0*p_chain->length())<<endl;
+        cerr<< (PI * 0.5*jx2 + real(other_scat_0) + pair_scat) / (1.0*p_chain->length()) <<endl;
+        cerr<< (PI * 0.5*jx2 + real(other_scat_1) - pair_scat) / (1.0*p_chain->length()) <<endl;
 
-	return true;
+            // iterate pair_scat
+            pair_scat = atan (lambda_0 - lambda_1);
+
+cerr<< "l0 "<<lambda_0<<" l1 "<<lambda_1<<" scat "<<pair_scat<<endl;
+
+        }
+
+	    // this turns a near pair into two real roots
+	    // in a way the iterate() scattering routines can deal with.
+	    aberration(j,alpha,a) = lambda_0 - rapidity(j,alpha);
+	    aberration(j,alpha,a+1) = lambda_1 - rapidity(j,alpha);
+	    deviance(j,alpha,a) = -0.5;
+	    deviance(j,alpha,a+1) = 0.5;
+
+        // iterate other rapidities, keep our inner pair on hold.
+		hold_deviation(j,alpha,a) = true;
+		hold_deviation(j,alpha,a+1) = true;
+
+        iterate();
+
+        // fix our real parts back, to account for moves in rapidity(j,alpha)
+        aberration(j,alpha,a) = lambda_0 - rapidity(j,alpha);
+	    aberration(j,alpha,a+1) = lambda_1 - rapidity(j,alpha);
+
+
+cerr<<"iter "<<i<<" roots "<<roots();
+cerr<<"bethe qn: "<< calculateBetheI()<<endl;
+
+    }
+
+
+	return false;
 }
 
 
@@ -649,7 +628,7 @@ double XXXDeviatedState::exRealIndicator1(const int bethe_2xJ, const double eps,
 }
 
 
-double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const double lam_guess)
+double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const double lam_guess, const double barrier_min)
 {
 	// find the zero for this eps
 	const int max_iter = 5000;
@@ -659,7 +638,7 @@ double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const 
 	// e.g. stepping outwards for a number of steps, then looking inwards, etc.
 	// but if it's too small then we move too slowly if we don't get it right...
 	// i.e we should pick a very small (1e-5?) initial step, then check, then a larger outward step, preferably exponential.
-	double fishing_step = 1.0;
+	double fishing_step = 0.01; // 1.0 breaks; 0.1 brackets first
 
 
 	// use provided lambda as initial guess
@@ -672,11 +651,21 @@ double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const 
 	do {
 		y_max += fishing_step;
 		y_min -= fishing_step;
+		if (y_min < barrier_min) y_min = barrier_min + 1e-11;
 
 		f_min = exRealIndicator1(bethe_jx2, eps, y_min);
 		f_max = exRealIndicator1(bethe_jx2, eps, y_max);
 
-		if (++iter > max_iter) return NOT_A_NUMBER;
+
+
+		if (++iter > max_iter) {
+
+cerr<<"brk: "<<iter<<"  ";
+cerr<<y_min<<" "<<f_min<<"   ";
+cerr<<y_max<<" "<<f_max<<endl;
+
+		    return NOT_A_NUMBER;
+		}
 	} while ( sgn(f_min) == sgn(f_max) );
 
 
@@ -699,7 +688,16 @@ double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const 
 			y_max = y_try;
 			f_max = f_try;
 		}
-		if (++iter > max_iter) return NOT_A_NUMBER;
+
+
+		if (++iter > max_iter) {
+
+cerr<<"zoom: "<< iter<<"  ";
+cerr<<y_min<<" "<<f_min<<"   ";
+cerr<<y_max<<" "<<f_max<<endl;
+
+		    return NOT_A_NUMBER;
+		}
 	}
 	return 0.5*(y_min+y_max);
 }
@@ -782,7 +780,6 @@ double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const 
 
 	bool XXXDeviatedState::solveSymmetric(void)
 	{
-// 		if (!oddSymmetric()) return false;	//sanity check
 
 		int number_origin=0;
 		int odd_type[2];

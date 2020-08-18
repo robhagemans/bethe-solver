@@ -114,7 +114,7 @@ protected:
 
 
 // RLH2008
-	double findRoot1(const int bethe_2xj, const double eps, const double lam_guess);
+	double findRoot1(const int bethe_2xj, const double eps, const double lam_guess, const double barrier_min);
 	double exRealIndicator1(const int bethe_2xj, const double eps, const double lam);
 	double exRealIndicator2(const int bethe_2xj, const double eps, const double lam);
 	bool findExtraReal(const int j, const int alpha, const int a);
