@@ -118,10 +118,6 @@ protected:
 	double exRealIndicator1(const int bethe_2xj, const double eps, const double lam);
 	double exRealIndicator2(const int bethe_2xj, const double eps, const double lam);
 	bool findExtraReal(const int j, const int alpha, const int a);
-
-	int getSum2xBetheQuantum (const int j, const int alpha) const;
-	void rebase(const int j, const int alpha, const int a);
-
 };
 
 

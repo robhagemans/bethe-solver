@@ -347,6 +347,7 @@ inline long double xi (const long double epsilon, const long double delta)
 					if (finite(new_rap)) break;
 					// if it doesn't work, slowly raise the offending rapidity and see if we can get something reasonable.
 					rapidity(j, alpha) *= 1.1;
+
 					// growing over the machine maximum or otherwise non-finite? give up.
 					if (!finite(rapidity(j, alpha))) break;
 				}
@@ -427,66 +428,29 @@ inline long double xi (const long double epsilon, const long double delta)
 			// since they're on different strings, they won't trigger this test.
 			if (abs(root(j, alpha, a) - root(j, alpha, a+1)) < epsilon_collapse)
 			{
-/** RLH2008 **/
-
 				// collapse signals extra real solutions. new approach.
-				if (p_chain->stringLength(j)==2) {
 
-cerr<<"collapse."<<endl;
+/** RLH2008 **/
 cerr<<"collapse "<<j<<SEP<<alpha<<SEP<<a<<SEP<<deviance(j, alpha,a)<<SEP<<aberration(j,alpha,a)<<endl;
-cerr<<roots();
+cerr<<quantum_number<<endl;
+cerr<<roots()<<endl;
+				// we assume a two-string. longer collapsing strings not yet supported.
+				hold(j, alpha) = true;
+				hold_deviation(j,alpha,a) = true;
+				hold_deviation(j,alpha,a+1) = true;
 
-					// TODO: this can probably be recast to fit in the n-string mould below
-					// ie rebase, then if there are two strings with same lengtha nd quantum number, use the findzero method
-					// and holds, otherwise tust iterate to convergence
+				convergence = BOOMBANOOMBA;
+				while (abs(convergence) > precision && iterations < max_iterations) {
+					// our iterate method is aware of deviance and increments iterations
 
-					// hold the two-string rapidities: there are responsibility of findExtraReal
-					hold(j, alpha) = true;
-					hold_deviation(j,alpha,a) = true;
-					hold_deviation(j,alpha,a+1) = true;
-
-					convergence = BOOMBANOOMBA;
-					while (abs(convergence) > precision && iterations < max_iterations) {
-						// our iterate method is aware of deviance and increments iterations
-						if (!findExtraReal(j, alpha, a)) return false;
-						iterate();
-						if (abs(convergence) > solve_bailout) return false;
-					}
-					if (abs(convergence) > precision) return false;
-
+					if (!findExtraReal(j, alpha, a)) return false;
+					iterate();
+					if (abs(convergence) > solve_bailout) return false;
 				}
-				else {
-
-cerr<<roots()<<endl;
-					// collapse the n-string to an n-1-string plus a real root
-					rebase(j,alpha,a);
-	convergence = BOOMBANOOMBA;
-					while (abs(convergence) > precision && iterations < max_iterations) {
-cerr<<roots()<<endl;
-
-						//REAL old_rap_0 = rapidity(0,0);
-						//REAL old_rap_1 = rapidity(2,0);
-
-						// solve bethe-takahashi
-						//if (XXX_State::solve()) cerr<<"success."<<endl;
-						//else cerr<<"failure."<<endl;
-cerr<<roots()<<endl;
-//exit(0);
-						iterate();
-						//double damping = 0.5;
-						//rapidity(0,0) = damping*old_rap_0+ (1.0-damping)*rapidity(0,0);
-						//rapidity(2,0) = damping*old_rap_1+ (1.0-damping)*rapidity(2,0);
-
-cerr<<roots()<<endl;
-
-						if (abs(convergence) > solve_bailout) return false;
-					}
-					if (abs(convergence) > precision) return false;
-
-				}
-
-
+				if (abs(convergence) > precision) return false;
 /** /RLH2008 **/
+
+
 			}
 		}
 		return true;
@@ -495,8 +459,17 @@ cerr<<roots()<<endl;
 
 /** RLH2008 **/
 
-int XXXDeviatedState::getSum2xBetheQuantum (const int j, const int alpha) const
+/* find extra real solutions */
+
+bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 {
+
+	// this should only be called after a collapse. we assume rapidity j, alpha is set to a collapsing solution
+	const int max_iter = 1000;
+	const double ex_real_precision = 1e-10;
+	const double start_distance = 1e-5;
+
+
 	// extract sum of Bethe J's from Takahashi I
 	int length_j = p_chain->stringLength(j);
 	int sum_2x_bethe_quantum = quantum_number(j, alpha) + p_chain->length()*(length_j-1);
@@ -507,237 +480,6 @@ int XXXDeviatedState::getSum2xBetheQuantum (const int j, const int alpha) const
 			sum_2x_bethe_quantum -= isgn(rapidity(j,alpha) - rapidity(k, beta))*(length_j*length_k - 2*min(length_j, length_k) + (j==k));
 		}
 	}
-	return sum_2x_bethe_quantum;
-}
-
-/* rebase strings on collapse */
-void XXXDeviatedState::rebase(const int j, const int alpha, const int a)
-{
-
-	int length_j = p_chain->stringLength(j);
-	int sum_2x_bethe_quantum = getSum2xBetheQuantum (j,alpha);
-
-
-	int jx2;
-	int short_string_jx2;
-	if (length_j==2) {
-		// now, we have the sum of two numbers. we also know the two numbers are equal.
-		// so, we know the two numbers, right? right? not right.
-		// since we're working modulo N, there's two solutions to that equation.
-		// yes, it pisses me off, too.
-		// however, the leap of faith we make is the following: if the numbers were close to zero,
-		// we'd have a regular, christian, tax-paying, real solution. strings are close to the borders.
-		// so extra real solutions (which are really just cross-dressing strings) should be found there as well.
-		jx2 = short_string_jx2 = sum_2x_bethe_quantum/2;
-		// I'm also hoping that jx2 is somehow in the interval [-N..N]
-		if ( abs(jx2) < p_chain->length()/2) jx2 -= sgn(jx2)*p_chain->length();
-		// in which case it's now in the outer halves of that interval. phew!
-		// I'm still not quite sure why exactly I need to choose this.
-		// however, if we'd pay someone to consider the extremely boring question as to why this is the case,
-		// we might find out.
-		// I hate modular arithmetic.
-		// TODO: this seems different from the calculation that XXX_State::calculateBetheQuantumNumbers makes,
-		// in that the last (moduloesque) operation lacks there.
-		// check if that one gets it wrong, and if not, why not.
-	}
-	else {
-
-		// here we need a conjecture for the bethe-J configuration.
-		// looking at the sequence of solutions, it looks verry probable that *all* strings consist of sequential quantum numbers.
-
-		// conjecture, then:
-		// 1) all strings consider of sequential quantum numbers, with one possibly coinciding with one of the other (n-1).
-		// 2) collapses occur only for coinciding quantum numbers (as seen empirically)
-		// 3) when an n-string collapses, it is succeeded by an (n-1)-string and an extra real solution (as seems to be the case for a 4-string)
-		// 4) the extra real solution has a high quantum number (higher than the max), in the outer halves of [-N...N}.
-		// 5) the remaining (n-1) string has sequential quantum numbers again.
-
-		// then, for the 'new' quantum numbers it follows
-		// (mod N) I_{j+1}^{new} + I_1^{new} = I^{old}_J + N/2 (mod N)
-		// this is the same as for two-string collapses, where it leads to two identical qns
-
-cerr<<endl;
-cerr<<quantum_number<<endl;
-cerr<<sum_2x_bethe_quantum<<endl;
-cerr<<modulo(sum_2x_bethe_quantum, 8)<<endl;
-
-		// FIXME: this is only for 4-strings.
-		jx2 = ( sum_2x_bethe_quantum + 3*(modulo(sum_2x_bethe_quantum + 4*(p_base->numberRoots()%2), 8) -4) )/4;
-cerr<<jx2<<endl;
-		//jx2 = (sum_2x_bethe_quantum )/4;
-
-		// get ourselves to the perimeter of the parameter space
-		int big_n = p_chain->length();
-
-		if (jx2>0)
-			while (jx2 < 0.75*big_n) jx2 += big_n/2;
-		else
-			while (jx2 > -0.75*big_n) jx2 -= big_n/2;
-		// get into desired interval (-N..N]
-		jx2 = -big_n + modulo (jx2+big_n, 2*big_n);
-
-cerr<<jx2<<endl;
-		// extra real solutions qn for four-string, N=48, M=4, id=37:
-		//jx2 = -47;
-
-
-	}
-
-
-	/// rebase.
-
-	// FIXME: this will screw up many things, starting with the ID number. therefore this is a temporary solution (famous last words).
-	// NOTE: the whole structure of this thing is fatally broken.
-	Base* new_base = p_base->clone();
-	// decrease number of n-strings
-	new_base->its_structure[j]--;
-	// add real solution and n-1-string
-	new_base->its_structure[j-1]++;
-	new_base->its_structure[0]++;
-	// generate quantum numbers, rapidities, devs,
-	Strip<int> new_quantum (new_base);
-	Strip<REAL> new_rap (new_base);
-	FullStrip<REAL> new_del (new_base);
-	FullStrip<REAL> new_eps (new_base);
-
-	Strip<short int> new_hold (new_base, false);
-	FullStrip<short int> new_hold_dev (new_base, false);
-cerr<<new_base->structure()<<endl;
-cerr<<p_base->structure()<<endl;
-
-	// set qns, raps
-	for (int k=0; k < p_base->numberTypes(); ++k) {
-		int length_k = p_chain->stringLength(k);
-		for (int beta=0; beta < p_base->numberStringsOfType(k)-1; ++beta) {
-			new_quantum(k, beta) = quantum_number(k, beta);
-			new_rap(k, beta) = rapidity(k, beta);
-			new_hold(k, beta) = hold(k, beta);
-			for (int b=0; b<length_k; ++b) {
-				new_del (k,beta,b) = deviance(k,beta,b);
-				new_eps (k,beta,b) = aberration(k,beta,b);
-				new_hold_dev (k, beta,b) = hold_deviation(k, beta,b);
-			}
-
-		}
-		int beta = p_base->numberStringsOfType(k)-1;
-		if (beta<0) continue;
-
-		if (0==k || j!=k) {
-			new_quantum(k, beta) = quantum_number(k, beta);
-			new_rap(k, beta) = rapidity(k, beta);
-			new_hold(k, beta) = hold(k, beta);
-			for (int b=0; b<length_k; ++b) {
-				new_del (k,beta,b) = deviance(k,beta,b);
-				new_eps (k,beta,b) = aberration(k,beta,b);
-				new_hold_dev (k, beta,b) = hold_deviation(k, beta,b);
-			}
-
-		}
-		else {
-			new_quantum(k-1, new_base->numberStringsOfType(k-1)-1) = short_string_jx2;
-			new_rap(k-1, new_base->numberStringsOfType(k-1)-1) = rapidity(k,beta);
-			new_hold(k-1, new_base->numberStringsOfType(k-1)-1) = hold(k, beta);
-			for (int b=0; b<length_k-1; ++b) {
-				new_del (k-1,beta,b) = 0;
-				new_eps (k-1,beta,b) = 0;
-				new_hold_dev (k-1,beta,b) = false;
-			}
-
-			new_quantum(0, new_base->numberStringsOfType(0)-1) = jx2;
-		///
-			new_rap(0, new_base->numberStringsOfType(0)-1) = rapidity(k,beta)+ aberration(k,beta,0);
-		///
-			new_hold(0, new_base->numberStringsOfType(0)-1) = false;
-
-			new_del (0,new_base->numberStringsOfType(0)-1,0) = 0;
-			new_eps (0,new_base->numberStringsOfType(0)-1,0) = 0;
-			new_hold_dev (0,new_base->numberStringsOfType(0)-1,0) = false;
-
-		}
-
-
-	}
-
-
-
-
-	// FIXME: drop base pointer. i don't know about deleting these, it'll cause horrors.
-	// again, the design is broken.
-	p_base = new_base;
-
-
-	// copy rebased parameters into data fields
-cerr<<quantum_number<<endl;
-cerr<<roots()<<endl;
-	quantum_number.forceAssign(new_quantum);
-cerr<<quantum_number<<endl;
-	rapidity.forceAssign(new_rap);
-	deviance.forceAssign(new_del);
-	aberration.forceAssign(new_eps);
-	hold.forceAssign(new_hold);
-	hold_deviation.forceAssign(new_hold_dev);
-cerr<<roots()<<endl;
-
-
-		// calculate Takahashi I from bethe J's
-		length_j = p_chain->stringLength(2);
-		///
-		sum_2x_bethe_quantum = -135;
-		///
-		int ix2 = sum_2x_bethe_quantum - p_chain->length()*(length_j-1);
-		for (int k=0; k < p_base->numberTypes(); ++k) {
-	cerr<<"k="<<k<<endl;
-			int length_k = p_chain->stringLength(k);
-			for (int beta=0; beta < p_base->numberStringsOfType(k); ++beta) {
-	cerr<<"beta="<<beta<<endl;
-				if (2==k && beta==alpha) continue;
-				ix2 += isgn(rapidity(j,alpha) - rapidity(k, beta))*(length_j*length_k - 2*min(length_j, length_k) + 	(2==k));
-	cerr<<"ix2="<<ix2<<endl;
-			}
-		}
-cerr<<"2I: "<<ix2<<endl;
-		//now we need to get the threestring I from the remaining Js of the 4string
-
-
-	// calculate Takahashi I from bethe J's
-		length_j = 1;
-		///
-		sum_2x_bethe_quantum = -47;
-		///
-		ix2 = sum_2x_bethe_quantum - p_chain->length()*(length_j-1);
-		for (int k=0; k < p_base->numberTypes(); ++k) {
-	cerr<<"k="<<k<<endl;
-			int length_k = p_chain->stringLength(k);
-			for (int beta=0; beta < p_base->numberStringsOfType(k); ++beta) {
-	cerr<<"beta="<<beta<<endl;
-				if (0==k && beta==alpha) continue;
-				ix2 += isgn(rapidity(j,alpha) - rapidity(k, beta))*(length_j*length_k - 2*min(length_j, length_k) + 	(0==k));
-	cerr<<"ix2="<<ix2<<endl;
-			}
-		}
-cerr<<"2I: "<<ix2<<endl;
-
-
-	quantum_number(0,0) = -46;
-	quantum_number(2,0) = -38;
-
-
-}
-
-/* find extra real solutions */
-
-// collapsed two-strings need special attention, as we need the non-trivial solution of a set of two equivalent equations
-bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
-{
-
-	// this should only be called after a collapse. we assume rapidity j, alpha is set to a collapsing solution
-	const int max_iter = 1000;
-	const double ex_real_precision = 1e-10;
-	const double start_distance = 1e-5;
-
-	int length_j = p_chain->stringLength(j);
-	// extract sum of Bethe J's from Takahashi I
-	int sum_2x_bethe_quantum = getSum2xBetheQuantum (j,alpha);
 
 	int jx2;
 	if (length_j==2) {
@@ -756,14 +498,14 @@ bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 		// however, if we'd pay someone to consider the extremely boring question as to why this is the case,
 		// we might find out.
 		// I hate modular arithmetic.
-		// TODO: this seems different from the calculation that XXX_State::calculateBetheQuantumNumbers makes,
-		// in that the last (moduloesque) operation lacks there.
-		// check if that one gets it wrong, and if not, why not.
 	}
 	else {
-		// this method does only collapsed two-strings.
+		// here we need a conjecture for the bethe-J configuration.
+		// looking at the sequence of solutions, it looks verry probable that *all* strings consist of sequential quantum numbers.
 		return false;
 	}
+
+cerr<<jx2<<endl;
 
 
 	// first find the trivial root. we only need to check one equation far that.
@@ -772,7 +514,7 @@ bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 
 	double x_trivial = 0.0;
 	double y_trivial = findRoot1(jx2, x_trivial, rapidity(j,alpha));
-//cerr<<y_trivial<<endl;
+
 	if (isNan(y_trivial)) return false;
 
 	// now that we have the trivial root, let's look for the other.
@@ -781,10 +523,8 @@ bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 	// fishing expedition to bracket a second root for positive x
 	double x_min = x_trivial + start_distance;
 	// find y for this x (stay on root curve for indicator_1), use y_trivial as guess
-//cerr<<"xmin: "<<x_min<<endl;
-	double y_min = findRoot1(jx2, x_min, y_trivial);
-///double y_min = rapidity(j,alpha) + aberration(j,alpha,0);
 
+	double y_min = findRoot1(jx2, x_min, y_trivial);
 	if (isNan(y_min)) return false;
 	// get the second indicator function
 	double f_min = exRealIndicator2(jx2, x_min, y_min);
@@ -795,47 +535,34 @@ bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 	double f_max;
 
 	int iter = 0;
-//cerr<<"we're here now"<<endl;
+
 	// fishing expedition for *one* extra root
 	do {
-		x_max += 0.1;
+		x_max += 1.0;
 		// stay on root curve for indicator_1, use last y as guess
-//cerr<<x_max<<" "<<y_max<<endl;
 		y_max = findRoot1(jx2, x_max, y_max);
 		// can't find the curve, drop out
 		if (isNan(y_max)) return false;
 		// second indicator function
 		f_max = exRealIndicator2(jx2, x_max, y_max);
-//cerr<<f_max<<endl;
+
 //cout<<iter<<"  ";
 //cout<<x_min<<" "<<y_min<<" "<<f_min<<"   ";
 //cout<<x_max<<"  "<<y_max<<" "<<f_max<<endl;
 
-		if (sgn(f_min) == sgn(f_max)) {
-			// max is the new min
-			x_min = x_max;
-			y_min = y_max;
-			f_min = f_max;
-		}
-
 		if (++iter > max_iter) return false;
 	} while ( sgn(f_min) == sgn(f_max) );
 //cout<<endl;
-//cerr<<"done fishing."<<endl;
-//cerr<<x_min<<" "<<y_min<<" "<<f_min<<"   "<<x_max<<" "<<y_max<<" "<<f_max<<endl;
 
 
-	double x_try, f_try, y_try;
-
+	double x_try, y_try, f_try;
 	// we now have a bracket. zoom in.
 	while ( abs(x_max - x_min) + abs(y_max-y_min) >= ex_real_precision ) {
 		// interpolate
 		//x_try = (abs(f_min)*x_max + abs(f_max)*x_min) / (abs(f_max)+abs(f_min));
 		// bisect
 		x_try = 0.5*(x_min+x_max);
-		y_try = 0.5*(y_min+y_max);
 		// stay on curve. use last y_try as guess
-//cout<<x_try<<endl;
 		y_try = findRoot1 (jx2, x_try, y_try);
 		if (isNan(y_try)) return false;
 		f_try = exRealIndicator2 (jx2, x_try, y_try);
@@ -863,19 +590,19 @@ bool XXXDeviatedState::findExtraReal(const int j, const int alpha, const int a)
 		if (++iter > max_iter) return false;
 	}
 
+//cout<<indicator1(x_min, y_min)<<" "<< indicator2(x_min, y_min)<<endl;
+//cout<<indicator1(x_max, y_max)<<" "<< indicator2(x_max, y_max)<<endl;
+
 
 	// this turns a near pair into two real roots
-	// careful not to move the other roots in the string! therefore we must not move rapidity itself.
-	aberration(j,alpha,a) = 0.5*(y_min+y_max) - rapidity(j,alpha);
-	aberration(j,alpha,a+1) = 0.5*(x_min+x_max) + 0.5*(y_min+y_max) - rapidity(j,alpha);
+//FIXME: this only works for two-strings?
+	rapidity(j,alpha) = 0.5*(y_min+y_max);
+	aberration(j,alpha,a) = 0;
+	aberration(j,alpha,a+1) = 0.5*(x_min+x_max);
 	deviance(j,alpha,a) = -0.5;
 	deviance(j,alpha,a+1) = 0.5;
 
-//cerr<<x_min<<" "<<y_min<<endl;
-//cerr<<roots()<<endl;
-
-
-
+//cout<<roots()<<endl;
 
 	return true;
 }
@@ -896,10 +623,10 @@ double XXXDeviatedState::exRealIndicator2(const int bethe_2xJ, const double eps,
 		if (hold_deviation(k,beta,b)) continue;
 
 		// we ignore imag parts. they oughta cancel.
-		scattering_term += real( atan(lam+eps - root(k, beta, b) ) );
+		scattering_term += real( atan(lam+eps - root(k, beta,b) ) );
 	}
 
-	return  2.0*(lam+eps) - tan(( 0.5*PI*bethe_2xJ +  atan(eps) + scattering_term )/p_chain->length() );
+	return p_chain->length() * atan(2.0*(lam+eps)) - ( 0.5*PI*bethe_2xJ +  atan(eps) + scattering_term );
 }
 double XXXDeviatedState::exRealIndicator1(const int bethe_2xJ, const double eps, const double lam)
 {
@@ -914,28 +641,25 @@ double XXXDeviatedState::exRealIndicator1(const int bethe_2xJ, const double eps,
 		if (hold_deviation(k,beta,b)) continue;
 
 		// we ignore imag parts. they oughta cancel.
-		scattering_term += real( atan(lam - root(k, beta, b) ) );
+		scattering_term += real( atan(lam - root(k, beta,b) ) );
 	}
 //cerr<<"scat1 "<<scattering_term<<endl;
 
-	return  2.0*lam - tan(( 0.5*PI*bethe_2xJ +  atan(-eps) + scattering_term )/p_chain->length());
+	return p_chain->length() * atan(2.0*lam) - ( 0.5*PI*bethe_2xJ +  atan(-eps) + scattering_term );
 }
-
-
 
 
 double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const double lam_guess)
 {
-
 	// find the zero for this eps
-	const int max_iter = 50; //5000
+	const int max_iter = 5000;
 	const double ex_real_precision = 1e-10;
 	// not too big as we might skip over the double root
 	// TODO: a more sophisticated approach would be more stable here,
 	// e.g. stepping outwards for a number of steps, then looking inwards, etc.
 	// but if it's too small then we move too slowly if we don't get it right...
 	// i.e we should pick a very small (1e-5?) initial step, then check, then a larger outward step, preferably exponential.
-	double fishing_step = 1e-3;
+	double fishing_step = 1.0;
 
 
 	// use provided lambda as initial guess
@@ -951,15 +675,11 @@ double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const 
 
 		f_min = exRealIndicator1(bethe_jx2, eps, y_min);
 		f_max = exRealIndicator1(bethe_jx2, eps, y_max);
-//cerr<< y_min << " "<<f_min <<"  "<<y_max<<" "<<f_max<<endl;
-
-		fishing_step = 0.1;
-		//fishing_step *= 2.0;
 
 		if (++iter > max_iter) return NOT_A_NUMBER;
 	} while ( sgn(f_min) == sgn(f_max) );
 
-//cerr<<endl;
+
 	// we now have a bracket. zoom in.
 	while ( abs(y_max - y_min) >= ex_real_precision ) {
 
@@ -979,10 +699,8 @@ double XXXDeviatedState::findRoot1(const int bethe_jx2, const double eps, const 
 			y_max = y_try;
 			f_max = f_try;
 		}
-//cerr<< y_min << " "<<f_min <<"  "<<y_max<<" "<<f_max<<endl;
 		if (++iter > max_iter) return NOT_A_NUMBER;
 	}
-//cerr<<endl<<endl;
 	return 0.5*(y_min+y_max);
 }
 
