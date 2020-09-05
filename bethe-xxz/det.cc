@@ -43,8 +43,3 @@ REAL lndetDestroy (Square< complex<REAL> >& mat)
 
 	return log_det;
 }
-
-
-
-
-

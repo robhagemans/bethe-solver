@@ -18,6 +18,7 @@ using namespace std;
 /** exceptions for function defined here **/
 extern const char* exc_ZeroDenominator; //polint
 extern const char* exc_NonFiniteArg; // findContinuedFraction
+extern const char* exc_NotImplementedNRC;
 
 /** some generic definitions **/
 typedef double REAL;						// so that we can easily make this e.g. float for speed.
