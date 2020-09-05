@@ -10,7 +10,9 @@ Further code is included to calculate form factors which can be used to find app
 
 For the isotropic regime, additional code is provided to find exact solutions in cases where the Takahashi string hypothesis breaks down; in particular, deviated strings, extra real solutions and singular symmetric states.
 
-This is research code. It is provided as-is and is no longer maintained. It may or may not work. It is shared here under a free licence in the hope that it may be useful for future students or researchers of these systems, but I am not holding my breath.
+This is research code. It is provided as-is and is no longer maintained. It may or may not work. In fact, as-is it does not work as you'll still need to add three functions from Numerical Recipes in C (`polint`, `ludcmp`, `lubksb`).
+
+This code is shared here under a free licence in the hope that it may be useful for future students or researchers of these systems, but I am not holding my breath.
 
 The algorithms underlying the code in this repository were developed and exposed in my doctoral thesis:
 - R L Hagemans, [_Dynamics of Heisenberg spin chains_](https://pure.uva.nl/ws/files/4416871/52466_hagemans_thesis.pdf) (Amsterdam, 2007)
